@@ -166,6 +166,16 @@ source "drivers/media/common/Kconfig"
 comment "Media ancillary drivers (tuners, sensors, i2c, frontends)"
 
 #
+# Audio Engine
+#
+config AUDIO_ENGINE
+	tristate "AUDIO Engine"
+	---help---
+	  Support for audio engine/dsp
+
+source "drivers/media/audio/Kconfig"
+
+#
 # Ancillary drivers (tuners, i2c, frontends)
 #
 
