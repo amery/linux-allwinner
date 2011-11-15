@@ -759,6 +759,8 @@ static irqreturn_t ehci_irq (struct usb_hcd *hcd)
 		unsigned	i = HCS_N_PORTS (ehci->hcs_params);
 		u32		ppcd = ~0;
 
+        printk("ehci_irq: port change detect\n");
+
 		/* kick root hub later */
 		pcd_status = status;
 
@@ -1229,6 +1231,11 @@ MODULE_LICENSE ("GPL");
 #ifdef CONFIG_USB_EHCI_SH
 #include "ehci-sh.c"
 #define PLATFORM_DRIVER		ehci_hcd_sh_driver
+#endif
+
+#ifdef CONFIG_USB_SW_SUN4I_HCI
+#include "ehci_sun4i.c"
+#define	PLATFORM_DRIVER		sw_ehci_hcd_driver
 #endif
 
 #ifdef CONFIG_PPC_PS3
