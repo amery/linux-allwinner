@@ -51,3 +51,7 @@ obj-y	+= davinci/
 obj-$(CONFIG_ARCH_OMAP)	+= omap/
 
 ccflags-y += -I$(srctree)/drivers/media/i2c
+
+ifdef CONFIG_VIDEO_SUN4I_CEDAR
+  obj-$(CONFIG_VIDEO_SUN4I_CEDAR) += sun4i/
+endif

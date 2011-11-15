@@ -211,6 +211,15 @@ config VIDEO_SH_VEU
 	    SH-Mobile SoCs.
 
 endif # V4L_MEM2MEM_DRIVERS
+config VIDEO_SUN4I_CEDAR
+       tristate "CEDAR driver for sun4i"
+       depends on ARCH_SUN4I
+       help
+         CEDAR driver for sun4i
+
+if VIDEO_SUN4I_CEDAR
+source "drivers/media/platform/sun4i/Kconfig"
+endif
 
 menuconfig V4L_TEST_DRIVERS
 	bool "Media test drivers"
