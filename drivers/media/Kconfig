@@ -163,7 +163,15 @@ source "drivers/media/firewire/Kconfig"
 # Common driver options
 source "drivers/media/common/Kconfig"
 
-comment "Media ancillary drivers (tuners, sensors, i2c, frontends)"
+#
+# PA CONTROL
+#
+config PA_CONTROL
+	tristate "PA Control"
+	---help---
+	  Support for audio pa control
+
+source "drivers/media/pa/Kconfig"
 
 #
 # Audio Engine
@@ -174,6 +182,9 @@ config AUDIO_ENGINE
 	  Support for audio engine/dsp
 
 source "drivers/media/audio/Kconfig"
+
+
+comment "Media ancillary drivers (tuners, sensors, i2c, frontends)"
 
 #
 # Ancillary drivers (tuners, i2c, frontends)
