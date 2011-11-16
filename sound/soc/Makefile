@@ -35,3 +35,6 @@ obj-$(CONFIG_SND_SOC)	+= ux500/
 obj-$(CONFIG_SND_SOC)	+= sun4i/
 obj-$(CONFIG_SND_SOC)	+= sun4i/hdmiaudio/
 obj-$(CONFIG_SND_SOC)	+= sun4i/spdif/
+obj-$(CONFIG_SND_SOC)	+= sun4i/i2s/
+
+
