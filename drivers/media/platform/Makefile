@@ -50,8 +50,12 @@ obj-y	+= davinci/
 
 obj-$(CONFIG_ARCH_OMAP)	+= omap/
 
+obj-$(CONFIG_VIDEO_CSI_SUN4I)					+= sun4i_csi/device/
+
 ccflags-y += -I$(srctree)/drivers/media/i2c
 
 ifdef CONFIG_VIDEO_SUN4I_CEDAR
   obj-$(CONFIG_VIDEO_SUN4I_CEDAR) += sun4i/
 endif
+obj-$(CONFIG_CSI0_SUN4I) += sun4i_csi/csi0/
+obj-$(CONFIG_CSI1_SUN4I) += sun4i_csi/csi1/

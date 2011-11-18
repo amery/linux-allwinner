@@ -37,13 +37,25 @@ struct videobuf_dma_contig_memory {
 		BUG();							    \
 	}
 
+// #define USE_DMA_CONTIG
+
+#ifndef USE_DMA_CONTIG
+extern unsigned long ve_start;
+extern unsigned long ve_size;
+#endif
+
 static int __videobuf_dc_alloc(struct device *dev,
 			       struct videobuf_dma_contig_memory *mem,
 			       unsigned long size, gfp_t flags)
 {
 	mem->size = size;
+#ifdef USE_DMA_CONTIG
 	mem->vaddr = dma_alloc_coherent(dev, mem->size,
 					&mem->dma_handle, flags);
+#else
+	mem->dma_handle = (ve_start + ve_size - 16*1024*1024 + buf->i * mem->size + 4095) & (~(4095));  //4k aligned
+	mem->vaddr = (void *)(mem->dma_handle + 0x80000000);    // not used
+#endif
 
 	if (!mem->vaddr) {
 		dev_err(dev, "memory alloc size %ld failed\n", mem->size);
@@ -58,7 +70,9 @@ static int __videobuf_dc_alloc(struct device *dev,
 static void __videobuf_dc_free(struct device *dev,
 			       struct videobuf_dma_contig_memory *mem)
 {
+#ifdef USE_DMA_CONTIG
 	dma_free_coherent(dev, mem->size, mem->vaddr, mem->dma_handle);
+#endif // USE_DMA_CONTIG
 
 	mem->vaddr = NULL;
 }

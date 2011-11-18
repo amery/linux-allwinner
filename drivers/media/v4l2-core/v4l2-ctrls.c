@@ -435,6 +435,15 @@ const char * const *v4l2_ctrl_get_menu(u32 id)
 		"External",
 		NULL,
 	};
+	/* Add camera flash light by raymonxiu */
+	static const char *flash_mode[] = {
+		"Off",
+		"Auto",
+		"On",
+		"Torch",
+		"Red-Eye",
+		NULL
+	};
 
 	static const char * const jpeg_chroma_subsampling[] = {
 		"4:4:4",
@@ -545,6 +554,9 @@ const char * const *v4l2_ctrl_get_menu(u32 id)
 	case V4L2_CID_DV_TX_RGB_RANGE:
 	case V4L2_CID_DV_RX_RGB_RANGE:
 		return dv_rgb_range;
+	/* Add camera flash light by raymonxiu */
+	case V4L2_CID_CAMERA_FLASH_MODE:
+		return flash_mode;
 
 	default:
 		return NULL;
@@ -599,6 +611,8 @@ const char *v4l2_ctrl_get_name(u32 id)
 	case V4L2_CID_MIN_BUFFERS_FOR_OUTPUT:	return "Min Number of Output Buffers";
 	case V4L2_CID_ALPHA_COMPONENT:		return "Alpha Component";
 	case V4L2_CID_COLORFX_CBCR:		return "Color Effects, CbCr";
+	/* Add camera flash light by raymonxiu */
+	case V4L2_CID_CAMERA_FLASH_MODE:	return "FlashLight Mode";
 
 	/* MPEG controls */
 	/* Keep the order of the 'case's the same as in videodev2.h! */
@@ -914,6 +928,8 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
 	case V4L2_CID_DV_RX_RGB_RANGE:
 	case V4L2_CID_TEST_PATTERN:
 	case V4L2_CID_TUNE_DEEMPHASIS:
+	/* Add camera flash light by raymonxiu */
+	case V4L2_CID_CAMERA_FLASH_MODE:
 		*type = V4L2_CTRL_TYPE_MENU;
 		break;
 	case V4L2_CID_LINK_FREQ:
