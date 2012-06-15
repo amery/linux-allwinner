@@ -17,7 +17,7 @@
  * MA 02111-1307 USA
  */
 
-#define pr_fmt(fmt)	"sunxi: script: " fmt
+#define pr_fmt(fmt)	"sunxi:sys_config: " fmt
 
 #include <linux/export.h>
 #include <linux/io.h>
@@ -75,12 +75,76 @@ EXPORT_SYMBOL_GPL(sunxi_find_property_fmt);
 /*
  * script.bin based device creation
  */
+static int feature_name(const char *name, char *feature, int *id)
+{
+	char c;
+	int ret = 0;
+	size_t l = strlen(name);
+
+	if (l == 0)
+		goto done;
+
+	/* UARTs and USBs have the %d at the end */
+	c = name[l-1];
+	if (c >= '0' && c <= '9') {
+		*id = c - '0';
+		--l;
+	} else {
+		*id = -1;
+	}
+
+	if (l==4 && strncmp(name, "usbc", 4) == 0) {
+		/* USB controllers don't end in _para */
+		strcpy(feature, "usb");
+		ret = 1;
+	} else if (l<6) {
+		/* needs room for _para */
+		;
+	} else if (strncmp(name+l-5, "_para", 5) == 0) {
+		l -= 5;
+		if (*id < 0) {
+			c = name[l-1];
+			if (c >= '0' && c <= '9') {
+				*id = c - '0';
+				--l;
+				/* ps2_%d_para */
+				if (l>1 && name[l-1] == '_')
+					--l;
+			}
+		}
+		if (l > 0) {
+			memcpy(feature, name, l);
+			feature[l] = '\0';
+			ret = 1;
+		}
+	}
+done:
+	return ret;
+}
+
 static int __init init_sunxi_script_devices(void)
 {
-	/* should use memory from dts, and command line argument */
-	if (!sunxi_script_probe(0x43000000))
-		pr_warn("script.bin not found\n");
+	int i;
+	const struct sunxi_section *section;
 
-	return 0;
+	/* should use memory from dts, and command line argument */
+	if (!sunxi_script_probe(0x43000000)) {
+		pr_warn("script.bin not found\n");
+		return 0;
+	}
+
+	pr_debug("scanning %d sections at 0x%p\n",
+		 sunxi_get_section_count(), sunxi_script_base);
+
+	sunxi_for_each_section(section, i) {
+		char feature[32] = "";
+		int index = -1;
+
+		if (feature_name(section->name, feature, &index))
+			pr_debug("[%s] -> %s[%d]\n", section->name, feature, index);
+		else
+			pr_debug("[%s] SKIP\n", section->name);
+	}
+	return 1;
 }
 pure_initcall(init_sunxi_script_devices);
