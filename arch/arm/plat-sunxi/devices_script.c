@@ -23,6 +23,9 @@
 
 #include <plat/script.h>
 
+/*
+ * scan script.bin
+ */
 static int feature_name(const char *name, char *feature, int *id)
 {
 	char c;
@@ -70,6 +73,30 @@ done:
 	return ret;
 }
 
+static void config_feature(const struct sunxi_section *section,
+			  const char *name, int index)
+{
+	const struct sunxi_property *prop;
+	const u32 *used;
+
+	prop = sunxi_find_property_fmt(section, "%s_used", name);
+	if (prop && (sunxi_property_type(prop) == SUNXI_PROP_TYPE_U32)) {
+		used = sunxi_property_value(prop);
+		if (index < 0)
+			pr_debug("[%s] -> %s used:%u\n",
+				 section->name, name, *used);
+		else
+			pr_debug("[%s] -> %s:%d used:%u\n",
+				 section->name, name, index, *used);
+	} else if (index < 0) {
+		pr_debug("[%s] -> %s assumed unused\n",
+			 section->name, name);
+	} else {
+		pr_debug("[%s] -> %s:%u assumed unused\n",
+			 section->name, name, index);
+	}
+}
+
 void __init sunxi_pdev_script_init(void)
 {
 	int i;
@@ -83,7 +110,7 @@ void __init sunxi_pdev_script_init(void)
 		int index = -1;
 
 		if (feature_name(section->name, feature, &index))
-			pr_debug("[%s] -> %s[%d]\n", section->name, feature, index);
+			config_feature(section, feature, index);
 		else
 			pr_debug("[%s] SKIP\n", section->name);
 	}
