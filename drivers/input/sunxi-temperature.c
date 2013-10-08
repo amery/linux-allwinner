@@ -82,7 +82,7 @@ static ssize_t sunxi_temp_enable_show(struct device *dev,
 }
 
 static void sunxi_temp_set_enable(struct device *dev, int enable)
-{	
+{
 	int pre_enable = atomic_read(&temp_data->enable);
 
 	mutex_lock(&temp_data->enable_mutex);
@@ -92,15 +92,15 @@ static void sunxi_temp_set_enable(struct device *dev, int enable)
 				msecs_to_jiffies(atomic_read(&temp_data->delay)));
 			atomic_set(&temp_data->enable, 1);
 		}
-		
+
 	} else {
 		if (pre_enable == 1) {
 			cancel_delayed_work_sync(&temp_data->work);
 			atomic_set(&temp_data->enable, 0);
-		} 
+		}
 	}
 	mutex_unlock(&temp_data->enable_mutex);
-	
+
 }
 
 static ssize_t sunxi_temp_enable_store(struct device *dev,
@@ -183,7 +183,7 @@ static void sunxi_temp_work_func(struct work_struct *work)
 	input_report_abs(data->temp_dev, ABS_MISC, tempetature);
 	input_sync(data->temp_dev);
 	dprintk(DEBUG_DATA_INFO, "%s: temperature %lld,\n", __func__, tempetature);
-	
+
 	schedule_delayed_work(&data->work, delay);
 }
 
@@ -220,17 +220,17 @@ static int __init sunxi_temp_init(void)
 		goto fail2;
 	}
 
-	temp_data->temp_dev->name = "sunxi-temp";  
-	temp_data->temp_dev->phys = "sunxitemp/input0"; 
-	temp_data->temp_dev->id.bustype = BUS_HOST;      
+	temp_data->temp_dev->name = "sunxi-temp";
+	temp_data->temp_dev->phys = "sunxitemp/input0";
+	temp_data->temp_dev->id.bustype = BUS_HOST;
 	temp_data->temp_dev->id.vendor = 0x0001;
 	temp_data->temp_dev->id.product = 0x0001;
 	temp_data->temp_dev->id.version = 0x0100;
 
 	input_set_capability(temp_data->temp_dev, EV_ABS, ABS_MISC);
-	//max 16bit 
+	//max 16bit
 	input_set_abs_params(temp_data->temp_dev, ABS_MISC, -50, 180, 0, 0);
-	
+
 	err = input_register_device(temp_data->temp_dev);
 	if (0 < err) {
 		printk("%s: could not register input device\n", __func__);
@@ -265,7 +265,7 @@ fail3:
 fail2:
 	kfree(temp_data);
 fail1:
-	return err;	
+	return err;
 }
 
 static void __exit sunxi_temp_exit(void)

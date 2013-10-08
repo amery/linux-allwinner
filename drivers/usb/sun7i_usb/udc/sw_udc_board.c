@@ -10,7 +10,7 @@
 *
 * Author 		: javen
 *
-* Description 	: °å¼¶¿ØÖÆ
+* Description 	: æ¿çº§æŽ§åˆ¶
 *
 * Notes         :
 *
@@ -41,7 +41,7 @@
 #include  "sw_udc_board.h"
 
 //---------------------------------------------------------------
-//  ºê ¶¨Òå
+//  å® å®šä¹‰
 //---------------------------------------------------------------
 
 #define res_size(_r) (((_r)->end - (_r)->start) + 1)
@@ -146,7 +146,7 @@ static void clear_usb_reg(__u32 usb_base)
 
 	/* global control and status */
 	reg_val = readl(USBC_REG_EX_USB_GCS(usb_base));
-	reg_val = 0x00;	
+	reg_val = 0x00;
 	writel(reg_val, USBC_REG_EX_USB_GCS(usb_base));
 
 	/* endpoint interrupt flag */

@@ -268,63 +268,63 @@ static void Init_ODM_ComInfo_8723a(PADAPTER	Adapter)
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 	PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
 	u8	cut_ver,fab_ver;
-	
+
 	//
 	// Init Value
 	//
 	_rtw_memset(pDM_Odm,0,sizeof(pDM_Odm));
-	
+
 	pDM_Odm->Adapter = Adapter;
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_PLATFORM,ODM_CE);
 	if(Adapter->interface_type == RTW_GSPI )
 		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_INTERFACE,ODM_ITRF_SDIO);
 	else
 		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_INTERFACE,Adapter->interface_type);//RTL871X_HCI_TYPE
-		
+
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_IC_TYPE,ODM_RTL8723A);
-	
+
 
 	if(IS_8723A_A_CUT(pHalData->VersionID))
 	{
 		fab_ver = ODM_UMC;
-		cut_ver = ODM_CUT_A;		
+		cut_ver = ODM_CUT_A;
 	}
 	else if(IS_8723A_B_CUT(pHalData->VersionID))
 	{
 		fab_ver = ODM_UMC;
-		cut_ver = ODM_CUT_B;		
+		cut_ver = ODM_CUT_B;
 	}
 	else
 	{
 		fab_ver = ODM_TSMC;
-		cut_ver = ODM_CUT_A;	
+		cut_ver = ODM_CUT_A;
 	}
-	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_FAB_VER,fab_ver);		
+	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_FAB_VER,fab_ver);
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_CUT_VER,cut_ver);
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_MP_TEST_CHIP,IS_NORMAL_CHIP(pHalData->VersionID));
-	
-#ifdef CONFIG_USB_HCI	
+
+#ifdef CONFIG_USB_HCI
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_BOARD_TYPE,pHalData->BoardType);
 
 	if(pHalData->BoardType == BOARD_USB_High_PA){
 		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_LNA,_TRUE);
 		ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_EXT_PA,_TRUE);
 	}
-#endif	
+#endif
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_PATCH_ID,pHalData->CustomerID);
 	//	ODM_CMNINFO_BINHCT_TEST only for MP Team
 	ODM_CmnInfoInit(pDM_Odm,ODM_CMNINFO_BWIFI_TEST,Adapter->registrypriv.wifi_spec);
-		
-	
+
+
 	if(pHalData->rf_type == RF_1T1R){
-		ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_RF_TYPE,ODM_1T1R);		
+		ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_RF_TYPE,ODM_1T1R);
 	}
 	else if(pHalData->rf_type == RF_2T2R){
-		ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_RF_TYPE,ODM_2T2R);		
+		ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_RF_TYPE,ODM_2T2R);
 	}
-	else if(pHalData->rf_type == RF_1T2R){		
-		ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_RF_TYPE,ODM_1T2R);		
-	}	
+	else if(pHalData->rf_type == RF_1T2R){
+		ODM_CmnInfoUpdate(pDM_Odm,ODM_CMNINFO_RF_TYPE,ODM_1T2R);
+	}
 }
 static void Update_ODM_ComInfo_8723a(PADAPTER	Adapter)
 {
@@ -333,8 +333,8 @@ static void Update_ODM_ComInfo_8723a(PADAPTER	Adapter)
 	struct pwrctrl_priv *pwrctrlpriv = &Adapter->pwrctrlpriv;
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 	PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
-	struct dm_priv	*pdmpriv = &pHalData->dmpriv;	
-	int i;	
+	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
+	int i;
 	pdmpriv->InitODMFlag =	ODM_BB_DIG				|
 #ifdef	CONFIG_ODM_REFRESH_RAMASK
 							ODM_BB_RA_MASK			|
@@ -342,17 +342,17 @@ static void Update_ODM_ComInfo_8723a(PADAPTER	Adapter)
 							ODM_BB_DYNAMIC_TXPWR	|
 							ODM_BB_FA_CNT			|
 							ODM_BB_RSSI_MONITOR	|
-							ODM_BB_CCK_PD			|							
-							ODM_BB_PWR_SAVE		|							
+							ODM_BB_CCK_PD			|
+							ODM_BB_PWR_SAVE		|
 							ODM_MAC_EDCA_TURBO	|
 							ODM_RF_TX_PWR_TRACK	|
-							ODM_RF_CALIBRATION		;		
+							ODM_RF_CALIBRATION		;
 	//
 	// Pointer reference
 	//
 	//ODM_CMNINFO_MAC_PHY_MODE pHalData->MacPhyMode92D
 	//	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_MAC_PHY_MODE,&(pDM_Odm->u1Byte_temp));
-	
+
 
 #ifdef CONFIG_ANTENNA_DIVERSITY
 	if(pHalData->AntDivCfg)
@@ -363,7 +363,7 @@ static void Update_ODM_ComInfo_8723a(PADAPTER	Adapter)
 			if (Adapter->registrypriv.mp_mode == 1)
 			{
 			pdmpriv->InitODMFlag =	ODM_RF_CALIBRATION	|
-									ODM_RF_TX_PWR_TRACK;	
+									ODM_RF_TX_PWR_TRACK;
 			}
 #endif//(MP_DRIVER==1)
 
@@ -391,7 +391,7 @@ static void Update_ODM_ComInfo_8723a(PADAPTER	Adapter)
 	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_BT_OPERATION,&(pDM_Odm->u1Byte_temp));
 	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_BT_DISABLE_EDCA,&(pDM_Odm->u1Byte_temp));
 	*/
-	
+
 	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_SCAN,&(pmlmepriv->bScanInProcess));
 	ODM_CmnInfoHook(pDM_Odm,ODM_CMNINFO_POWER_SAVING,&(pwrctrlpriv->bpower_saving));
 
@@ -400,7 +400,7 @@ static void Update_ODM_ComInfo_8723a(PADAPTER	Adapter)
 	{
 		//pDM_Odm->pODM_StaInfo[i] = NULL;
 		ODM_CmnInfoPtrArrayHook(pDM_Odm, ODM_CMNINFO_STA_STATUS,i,NULL);
-	}	
+	}
 }
 
 void
@@ -411,7 +411,7 @@ rtl8723a_InitHalDm(
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	PDM_ODM_T		pDM_Odm = &(pHalData->odmpriv);
-	
+
 	u8	i;
 
 	pdmpriv->DM_Type = DM_Type_ByDriver;
@@ -422,7 +422,7 @@ rtl8723a_InitHalDm(
 //	btdm_InitBtCoexistDM(Adapter); // Move to BT_CoexistMechanism()
 #endif
 	pdmpriv->InitDMFlag = pdmpriv->DMFlag;
-	
+
 	Update_ODM_ComInfo_8723a(Adapter);
 	ODM_DMInit(pDM_Odm);
 	// Save REG_INIDATA_RATE_SEL value for TXDESC.
@@ -479,7 +479,7 @@ rtl8723a_HalDmWatchDog(
 		// Calculate Tx/Rx statistics.
 		//
 		dm_CheckStatistics(Adapter);
-		
+
 
 #ifdef CONFIG_CONCURRENT_MODE
 		if(Adapter->adapter_type > PRIMARY_ADAPTER)
@@ -515,7 +515,7 @@ _record_initrate:
 			}
 		}
 	}
-	
+
 
 	//ODM
 	if (hw_init_completed == _TRUE)
@@ -528,13 +528,13 @@ _record_initrate:
 
 		if(rtw_linked_check(Adapter))
 			bLinked = _TRUE;
-		
+
 #ifdef CONFIG_CONCURRENT_MODE
 		if(pbuddy_adapter && rtw_linked_check(pbuddy_adapter))
 			bLinked = _TRUE;
 #endif //CONFIG_CONCURRENT_MODE
 
-		ODM_CmnInfoUpdate(&pHalData->odmpriv ,ODM_CMNINFO_LINK, bLinked);				
+		ODM_CmnInfoUpdate(&pHalData->odmpriv ,ODM_CMNINFO_LINK, bLinked);
 		ODM_DMWatchdog(&pHalData->odmpriv);
 
 	}
@@ -559,9 +559,9 @@ void rtl8723a_init_dm_priv(IN PADAPTER Adapter)
 	PDM_ODM_T 		podmpriv = &pHalData->odmpriv;
 	_rtw_memset(pdmpriv, 0, sizeof(struct dm_priv));
 	Init_ODM_ComInfo_8723a(Adapter);
-#ifdef CONFIG_SW_ANTENNA_DIVERSITY	
-	//_init_timer(&(pdmpriv->SwAntennaSwitchTimer),  Adapter->pnetdev , odm_SW_AntennaSwitchCallback, Adapter);	
-	ODM_InitAllTimers(podmpriv );	
+#ifdef CONFIG_SW_ANTENNA_DIVERSITY
+	//_init_timer(&(pdmpriv->SwAntennaSwitchTimer),  Adapter->pnetdev , odm_SW_AntennaSwitchCallback, Adapter);
+	ODM_InitAllTimers(podmpriv );
 #endif
 }
 
@@ -570,9 +570,9 @@ void rtl8723a_deinit_dm_priv(IN PADAPTER Adapter)
 	PHAL_DATA_TYPE	pHalData = GET_HAL_DATA(Adapter);
 	struct dm_priv	*pdmpriv = &pHalData->dmpriv;
 	PDM_ODM_T 		podmpriv = &pHalData->odmpriv;
-#ifdef CONFIG_SW_ANTENNA_DIVERSITY	
-	//_cancel_timer_ex(&pdmpriv->SwAntennaSwitchTimer);	
-	ODM_CancelAllTimers(podmpriv);	
+#ifdef CONFIG_SW_ANTENNA_DIVERSITY
+	//_cancel_timer_ex(&pdmpriv->SwAntennaSwitchTimer);
+	ODM_CancelAllTimers(podmpriv);
 #endif
 }
 

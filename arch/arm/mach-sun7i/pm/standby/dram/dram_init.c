@@ -40,16 +40,16 @@ typedef struct _boot_para_info_t
     __u32  reserved[20];
 }boot_para_info_t;
 
-//®™°ß®Æ?¶Ã?°Í?o®™GPIO?®§1?¶Ã?®∫y?Y?®¢11
+//Ëµ§‚ÄúËªä?Á±≥?„èí?oËµ§GPIO?Ëßí1?Á±≥?ÈÇ£y?Y?Ëäç11
 typedef struct _normal_gpio_cfg
 {
-    __u8      port;                       //???®≤o?
-    __u8      port_num;                   //???®≤?®≤°¿®§o?
-    __s8      mul_sel;                    //1|?®π°¿®§o?
-    __s8      pull;                       //¶Ã?°¡®®°¡°‰®¨?
-    __s8      drv_level;                  //?y?°•?y?°•?®π®¢|
-    __s8      data;                       //®∫?3?¶Ã???
-    __u8      reserved[2];                //°¿°Í®¢???°Í?°¿°Í?°Ë????
+    __u8      port;                       //???ËøÜo?
+    __u8      port_num;                   //???ËøÜ?ËøÜ„ä£Ëßío?
+    __s8      mul_sel;                    //1|?ÈÇ¶„ä£Ëßío?
+    __s8      pull;                       //Á±≥?‚ÑÖË±ï‚ÑÖ‚à©Ë∂≥?
+    __s8      drv_level;                  //?y?‚Äò?y?‚Äò?ÈÇ¶Ëäç|
+    __s8      data;                       //ÈÇ£?3?Á±≥???
+    __u8      reserved[2];                //„ä£„èíËäç???„èí?„ä£„èí?‚àü????
 }
 normal_gpio_cfg;
 
@@ -61,12 +61,12 @@ typedef struct _boot0_private_head_t
         __u32                       prvt_head_size;
         char                        prvt_head_vsn[4];       // the version of boot0_private_head_t
         standy_dram_para_t          dram_para;              // DRAM patameters for initialising dram. Original values is arbitrary,
-        __s32                                           uart_port;              // UART?????°¬°¿®§o?
-        normal_gpio_cfg             uart_ctrl[2];           // UART?????°¬(¶Ã°¬®∫?°‰®∞®Æ??®≤)®∫y?YD??°È
+        __s32                                           uart_port;              // UART?????¬Ø„ä£Ëßío?
+        normal_gpio_cfg             uart_ctrl[2];           // UART?????¬Ø(Á±≥¬ØÈÇ£?‚à©Ëæ∞Ëªä??ËøÜ)ÈÇ£y?YD??‚äø
         __s32                       enable_jtag;            // 1 : enable,  0 : disable
-    normal_gpio_cfg                 jtag_gpio[5];           // °¿°Í°‰?JTAG¶Ã?®®?2?GPIOD??°È
-    normal_gpio_cfg             storage_gpio[32];       // °‰?°‰°È®¶®®°¿? GPIOD??°È
-    char                        storage_data[512 - sizeof(normal_gpio_cfg) * 32];      // ®Æ??°Ï°¿°Í®¢?®∫y?YD??°È
+    normal_gpio_cfg                 jtag_gpio[5];           // „ä£„èí‚à©?JTAGÁ±≥?Ë±ï?2?GPIOD??‚äø
+    normal_gpio_cfg             storage_gpio[32];       // ‚à©?‚à©‚äøË∞∑Ë±ï„ä£? GPIOD??‚äø
+    char                        storage_data[512 - sizeof(normal_gpio_cfg) * 32];      // Ëªä??‚à´„ä£„èíËäç?ÈÇ£y?YD??‚äø
     //boot_nand_connect_info_t    nand_connect_info;
 }boot0_private_head_t;
 
@@ -247,12 +247,12 @@ void mctl_configure_hostport(void)
     {
         mctl_write_w(SDR_HPCR + (i<<2), hpcr_value[i]);
     }
-    
+
     for(i=16; i<28; i++)
     {
         mctl_write_w(SDR_HPCR + (i<<2), hpcr_value[i]);
-    }   
-    
+    }
+
     mctl_write_w(SDR_HPCR + (29<<2), hpcr_value[i]);
     mctl_write_w(SDR_HPCR + (31<<2), hpcr_value[i]);
 }
@@ -295,7 +295,7 @@ void mctl_setup_dram_clock(__u32 clk)
     reg_val |= 0x3<<14;
     mctl_write_w(DRAM_CCM_AHB_GATE_REG, reg_val);
     delay_us(10);
-    
+
 }
 
 __s32 DRAMC_init(__dram_para_t *para)
@@ -303,7 +303,7 @@ __s32 DRAMC_init(__dram_para_t *para)
     __u32 reg_val;
 	__u32 hold_flag = 0;
     __u8  reg_value;
-    __s32 ret_val;  
+    __s32 ret_val;
 
     //check input dram parameter structure
     if(!para)
@@ -357,12 +357,12 @@ __s32 DRAMC_init(__dram_para_t *para)
     if(para->dram_tpr4 & 0x2)
     {
         reg_val &= ~((0x1<<24) | (0x1<<1));
-    }    
+    }
     mctl_write_w(SDR_ZQCR1, reg_val);
 
     //dram clock on
     DRAMC_clock_output_en(1);
-    
+
     hold_flag = mctl_read_w(SDR_DPCR);
     if(hold_flag == 0) //normal branch
     {
@@ -372,15 +372,15 @@ __s32 DRAMC_init(__dram_para_t *para)
         reg_val |= (para->dram_zq)&0xf0000000;
         reg_val |= (0x1u<<31);
         mctl_write_w(SDR_ZQCR0, reg_val);
-        
+
         while( !((mctl_read_w(SDR_ZQSR)&(0x1u<<31))) );
 
-	}            
+	}
         //Set CKE Delay to about 1ms
         reg_val = mctl_read_w(SDR_IDCR);
         reg_val |= 0x1ffff;
         mctl_write_w(SDR_IDCR, reg_val);
-	
+
 //      //dram clock on
 //      DRAMC_clock_output_en(1);
     //reset external DRAM when CKE is Low
@@ -397,7 +397,7 @@ __s32 DRAMC_init(__dram_para_t *para)
         reg_val |= (0x1<<12);
         mctl_write_w(SDR_CR, reg_val);
     }
-    
+
     mem_delay(0x10);
     while(mctl_read_w(SDR_CCR) & (0x1U<<31)) {};
 
@@ -439,7 +439,7 @@ __s32 DRAMC_init(__dram_para_t *para)
     reg_val = mctl_read_w(SDR_CCR);
     reg_val |= 0x1U<<14;
     reg_val &= ~(0x1U<<17);
-        //2T & 1T mode 
+        //2T & 1T mode
     if(para->dram_tpr4 & 0x1)
     {
         reg_val |= 0x1<<5;
@@ -452,7 +452,7 @@ __s32 DRAMC_init(__dram_para_t *para)
     mctl_write_w(SDR_CCR, reg_val);
 
     while(mctl_read_w(SDR_CCR) & (0x1U<<31)) {};
-    
+
 //  while(1);
 
     //setup zq calibration manual
@@ -474,27 +474,27 @@ __s32 DRAMC_init(__dram_para_t *para)
         //reg_val |= 0x17b00000;
         reg_val |= (0x1<<28) | (para->dram_zq<<20);
         mctl_write_w(SDR_ZQCR0, reg_val);
-        
+
         //03-08
         reg_val = mctl_read_w(SDR_DCR);
         reg_val &= ~(0x1fU<<27);
         reg_val |= 0x12U<<27;
         mctl_write_w(SDR_DCR, reg_val);
         while( mctl_read_w(SDR_DCR)& (0x1U<<31) );
-        
+
         mem_delay(0x100);
 
         //dram pad hold off
         mctl_write_w(SDR_DPCR, 0x16510000);
-        
-        while(mctl_read_w(SDR_DPCR) & 0x1){}        
-                
+
+        while(mctl_read_w(SDR_DPCR) & 0x1){}
+
         //exit self-refresh state
         reg_val = mctl_read_w(SDR_DCR);
         reg_val &= ~(0x1fU<<27);
         reg_val |= 0x17U<<27;
         mctl_write_w(SDR_DCR, reg_val);
-    
+
         //check whether command has been executed
         while( mctl_read_w(SDR_DCR)& (0x1U<<31) );
     	//disable auto-fresh			//by cpl 2013-5-6
@@ -503,13 +503,13 @@ __s32 DRAMC_init(__dram_para_t *para)
     	mctl_write_w(SDR_DRR, reg_val);
 
         mem_delay(0x100);;
-    
+
 //        //issue a refresh command
 //        reg_val = mctl_read_w(SDR_DCR);
 //        reg_val &= ~(0x1fU<<27);
 //        reg_val |= 0x13U<<27;
 //        mctl_write_w(SDR_DCR, reg_val);
-//        
+//
 //        while( mctl_read_w(SDR_DCR)& (0x1U<<31) );
 //
 //        mem_delay(0x100);
@@ -517,16 +517,16 @@ __s32 DRAMC_init(__dram_para_t *para)
 
     //scan read pipe value
     mctl_itm_enable();
-    
+
     if(hold_flag == 0)//normal branch
     {
     	ret_val = DRAMC_scan_readpipe();
-    	
+
     	if(ret_val < 0)
 	    {
 	        return 0;
 	    }
-    
+
     }else	//super standby branch
     {
     	//write back dqs gating value
@@ -539,7 +539,7 @@ __s32 DRAMC_init(__dram_para_t *para)
       //mctl_write_w(SDR_RSLR0, dqs_value_save[0]);
 	  //mctl_write_w(SDR_RDQSGR, dqs_value_save[1]);
     }
-    
+
     //configure all host port
     mctl_configure_hostport();
 
@@ -556,7 +556,7 @@ __s32 DRAMC_scan_readpipe(void)
     reg_val = mctl_read_w(SDR_CSR);
     reg_val &= ~(0x1<<20);
     mctl_write_w(SDR_CSR, reg_val);
-    
+
     //data training trigger
     reg_val = mctl_read_w(SDR_CCR);
     reg_val |= 0x1<<30;

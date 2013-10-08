@@ -24,8 +24,8 @@
 
 #include <mach/system.h>
 #include <mach/hardware.h>
-#include <mach/gpio.h> 
-#include <mach/sys_config.h> 
+#include <mach/gpio.h>
+#include <mach/sys_config.h>
 #include <linux/gpio.h>
 #include <linux/init-input.h>
 
@@ -52,7 +52,7 @@
 * sw_write_info - The contents of the device.info file
 *
 * @str_info:    Record contents.
-* @str_id:      Record the line Numbers.        
+* @str_id:      Record the line Numbers.
 */
 struct sw_write_info{
         char str_info[STRING_LENGTH];
@@ -62,24 +62,24 @@ struct sw_write_info{
 /*
 * sw_device_info - Record related information of the device
 *
-* @name:        Device driver name. 
+* @name:        Device driver name.
 * @i2c_address: Device I2C address.
 * @chip_id_reg: Device chip id register.
-* @id_value:    Device chip id value. 
+* @id_value:    Device chip id value.
 * @same_flag:   When the device without chip id,Used to identify the same i2c address.
 *
 * When the device without chip id,Chip_id_reg & id_value should be set to 0x00.
 * and when a device is the same as the address of the device, the device has the chip id,
-* then same_flag should set to 1 without chip id of the device.                          
+* then same_flag should set to 1 without chip id of the device.
 */
 struct sw_device_info{
         char name[NAME_LENGTH];
-        
+
         unsigned short i2c_address[ADDRESS_NUMBER];
         unsigned short chip_id_reg;
         unsigned short id_value[REG_VALUE_NUMBER];
-        
-        int same_flag; 
+
+        int same_flag;
 };
 
 /*
@@ -88,12 +88,12 @@ struct sw_device_info{
 * @used_keyname:        sysconfig.fex para key name, format:xxx_para ,For example: ctp_para
 * @used_subname:        sysconfig.fex para used name, format:xxx_used ,For example: ctp_used
 * @detected_keyname:    sysconfig.fex detect list para key name, format:xxx_list_para,
-*                       For example: ctp_list_para    
+*                       For example: ctp_list_para
 * @detected_subname:    sysconfig.fex detect list para detect used name, format:xxx_det_used,
 *                       For example: ctp_det_used
 * @twi_id_name:         sysconfig.fex para twi id name, format:xxx_twi_id ,For example: ctp_twi_id
-* @write_key_name:      Device.info file Identifies the device driver keyword 
-*                       format:xxx_module_name,For example:ctp_module_name                             
+* @write_key_name:      Device.info file Identifies the device driver keyword
+*                       format:xxx_module_name,For example:ctp_module_name
 */
 struct para_name{
         char* used_keyname;
@@ -107,32 +107,32 @@ struct para_name{
 /*
 * sw_device - The information of the device.
 *
-* @info:        sw_device_info structure.                
+* @info:        sw_device_info structure.
 * @temp_client: Contain device address of the i2c_client structure.
-* @filp:        Read/write file structure.        
+* @filp:        Read/write file structure.
 * @name:        para_name sw_device_info.
-* @write_info:  Store device.info information.  
-* @device_name: Device driver name 
-* @check_addr:  Have tested the i2c address.  
+* @write_info:  Store device.info information.
+* @device_name: Device driver name
+* @check_addr:  Have tested the i2c address.
 * @support_number: The array size of info,total number of devices need to test.
-* @current_number: The array subscript of info,the positions of the detected device in the info.     
-* @detect_used: sysconfig.fex file xxx_det_used value. 
-* @write_flag:  Identifies whether the contents of the need to update the device.info file.  
+* @current_number: The array subscript of info,the positions of the detected device in the info.
+* @detect_used: sysconfig.fex file xxx_det_used value.
+* @write_flag:  Identifies whether the contents of the need to update the device.info file.
 * @total_raw:   The total number of the device.info file
-* @write_id:    The number of rows in the device.info file of device            
-* @twi_id:      Twi id of the device              
+* @write_id:    The number of rows in the device.info file of device
+* @twi_id:      Twi id of the device
 * @response_addr: The address of the communication success.
 */
 struct sw_device{
-        struct sw_device_info   *info;    
+        struct sw_device_info   *info;
         struct i2c_client       *temp_client;
         struct file             *filp;
         struct para_name        *name;
-        struct sw_write_info write_info[NAME_LENGTH]; 
-        
+        struct sw_write_info write_info[NAME_LENGTH];
+
         char    device_name[NAME_LENGTH];
-        char    check_addr[NAME_LENGTH]; 
-        
+        char    check_addr[NAME_LENGTH];
+
         int     support_number;
         int     current_number;
         int     detect_used;
@@ -140,27 +140,27 @@ struct sw_device{
         int     total_raw;
         int     write_id;
 
-        
-        __u32   twi_id; 
-        
+
+        __u32   twi_id;
+
         unsigned short response_addr;
-                      
+
 };
 
 /*
 *
 * sw_device_name - The information of the device.
 *
-* @g_name: gsensor device name.                
+* @g_name: gsensor device name.
 * @c_name: ctp device name
-* @g_addr: gsensor device address.        
+* @g_addr: gsensor device address.
 * @c_addr: ctp device address.
 */
 
 struct sw_device_name{
         char g_name[NAME_LENGTH];
         char c_name[NAME_LENGTH];
-        
+
         unsigned short g_addr;
         unsigned short c_addr;
 };

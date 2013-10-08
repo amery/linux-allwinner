@@ -31,7 +31,7 @@
 #include <asm/io.h>
 #include <asm/uaccess.h>
 
-#include <mach/gpio.h> 
+#include <mach/gpio.h>
 #include <mach/irqs.h>
 #include <mach/system.h>
 #include <mach/hardware.h>
@@ -58,7 +58,7 @@ static u32 int_handle = 0;
 #define _MACH_MSM_TOUCH_H_
 
 #define ZET_TS_ID_NAME          "zet622x"
-#define MJ5_TS_NAME	        ZET_TS_ID_NAME 
+#define MJ5_TS_NAME	        ZET_TS_ID_NAME
 
 #define RSTPIN_ENABLE
 #define TPINFO	                1
@@ -69,8 +69,8 @@ static u32 int_handle = 0;
 #define TP_AA_X_MAX	        480
 #define TP_AA_Y_MAX	        600
 #define FINGER_NUMBER           5
-#define KEY_NUMBER              0	//please assign correct default key number 0/8 
- 
+#define KEY_NUMBER              0	//please assign correct default key number 0/8
+
 #define DEBOUNCE_NUMBER	        1
 #define P_MAX	                255
 #define D_POLLING_TIME	        25000
@@ -106,7 +106,7 @@ struct zet6221_tsdrv {
 	struct i2c_client *i2c_ts;
 	struct work_struct work1;
 	struct work_struct work2; //  write_cmd
-	struct workqueue_struct *ts_workqueue; // 
+	struct workqueue_struct *ts_workqueue; //
 	struct workqueue_struct *ts_workqueue1; //write_cmd
 	struct input_dev *input;
 	struct timer_list polling_timer;
@@ -142,18 +142,18 @@ static u16 FingerNum=0;
 static u16 KeyNum=0;
 
 static u16 fb[8] = {0x3DF1, 0x3DF4, 0x3DF7, 0x3DFA, 0x3EF6, 0x3EF9, 0x3EFC, 0x3EFF};
-static u16 fb21[8] = {0x3DF1, 0x3DF4, 0x3DF7, 0x3DFA, 0x3EF6, 0x3EF9, 0x3EFC, 0x3EFF}; 
+static u16 fb21[8] = {0x3DF1, 0x3DF4, 0x3DF7, 0x3DFA, 0x3EF6, 0x3EF9, 0x3EFC, 0x3EFF};
 static u16 fb23[8] = {0x7BFC, 0x7BFD, 0x7BFE, 0x7BFF, 0x7C04, 0x7C05, 0x7C06, 0x7C07};
 
 static struct i2c_client *this_client;
 static int resetCount = 0;          //albert++ 20120807
-static int bufLength=0;	
+static int bufLength=0;
 static int f_up_cnt=0;
-static int enable_cmd; 
+static int enable_cmd;
 
 /**
  * ctp_detect - Device detection callback for automatic device creation
- * return value:  
+ * return value:
  *                    = 0; success;
  *                    < 0; err
  */
@@ -164,16 +164,16 @@ static int ctp_detect(struct i2c_client *client, struct i2c_board_info *info)
 
         if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
                 return -ENODEV;
-    
+
 	if(twi_id == adapter->nr){
                 dprintk(DEBUG_INIT,"%s: addr = %x\n", __func__, client->addr);
                 ret = i2c_test(client);
                 if(!ret){
         		printk("%s:I2C connection might be something wrong \n", __func__);
         		return -ENODEV;
-        	} else {           	    
+        	} else {
             	        strlcpy(info->type, ZET_TS_ID_NAME, I2C_NAME_SIZE);
-    		    return 0;	
+    		    return 0;
 	        }
 
 	}else{
@@ -182,7 +182,7 @@ static int ctp_detect(struct i2c_client *client, struct i2c_board_info *info)
 }
 
 /***********************************************************************
-    [function]: 
+    [function]:
 		        callback: read data by i2c interface;
     [parameters]:
 			    client[in]:  struct i2c_client ??represent an I2C slave device;
@@ -202,7 +202,7 @@ static s32 zet6221_i2c_read_tsdata(struct i2c_client *client, u8 *data, u8 lengt
 }
 
 /***********************************************************************
-    [function]: 
+    [function]:
 		        callback: write data by i2c interface;
     [parameters]:
 			    client[in]:  struct i2c_client ??represent an I2C slave device;
@@ -222,9 +222,9 @@ static s32 zet6221_i2c_write_tsdata(struct i2c_client *client, u8 *data, u8 leng
 }
 
 void ts_write_charge_enable_cmd(void)
-{	
+{
         int ret=0;
-        u8 ts_write_charge_cmd[1] = {0xb5}; 
+        u8 ts_write_charge_cmd[1] = {0xb5};
         dprintk(DEBUG_INIT, "%s is running ==========",__FUNCTION__);
         ret=zet6221_i2c_write_tsdata(this_client, ts_write_charge_cmd, 1);
 }
@@ -232,7 +232,7 @@ EXPORT_SYMBOL_GPL(ts_write_charge_enable_cmd);
 
 void ts_write_charge_disable_cmd(void)
 {
-	u8 ts_write_cmd[1] = {0xb6}; 
+	u8 ts_write_cmd[1] = {0xb6};
 	int ret=0;
 	dprintk(DEBUG_INIT, "%s is running ==========",__FUNCTION__);
 	ret=zet6221_i2c_write_tsdata(this_client, ts_write_cmd, 1);
@@ -240,7 +240,7 @@ void ts_write_charge_disable_cmd(void)
 EXPORT_SYMBOL_GPL(ts_write_charge_disable_cmd);
 
 /***********************************************************************
-    [function]: 
+    [function]:
 		        callback: Timer Function if there is no interrupt fuction;
     [parameters]:
 			    arg[in]:  arguments;
@@ -254,7 +254,7 @@ static void polling_timer_func(unsigned long arg)
 
 	struct zet6221_tsdrv *ts_drv = (struct zet6221_tsdrv *)arg;
 	queue_work(ts_drv->ts_workqueue1, &ts_drv->work2);
-	mod_timer(&ts_drv->polling_timer,jiffies + msecs_to_jiffies(polling_time));	
+	mod_timer(&ts_drv->polling_timer,jiffies + msecs_to_jiffies(polling_time));
 }
 
 #endif
@@ -262,10 +262,10 @@ static void polling_timer_func(unsigned long arg)
 static void write_cmd_work(struct work_struct *_work)
 {
 	if(enable_cmd != ChargeChange)
-	{	
+	{
 		if(enable_cmd == 1) {
 			ts_write_charge_enable_cmd();
-			
+
 		}else if(enable_cmd == 0)
 		{
 			ts_write_charge_disable_cmd();
@@ -276,7 +276,7 @@ static void write_cmd_work(struct work_struct *_work)
 }
 
 /***********************************************************************
-    [function]: 
+    [function]:
 		        callback: coordinate traslating;
     [parameters]:
 			    px[out]:  value of X axis;
@@ -319,7 +319,7 @@ void touch_coordinate_traslating(u32 *px, u32 *py, u8 p)
 }
 
 /***********************************************************************
-    [function]: 
+    [function]:
 		        callback: read finger information from TP;
     [parameters]:
     			client[in]:  struct i2c_client ??represent an I2C slave device;
@@ -336,20 +336,20 @@ static u8 zet6221_ts_get_xy_from_panel(struct i2c_client *client, u32 *x, u32 *y
 	u8  ts_data[70];
 	int ret;
 	int i;
-	
+
 	memset(ts_data, 0, 70);
 
 	ret=zet6221_i2c_read_tsdata(client, ts_data, bufLength);
-	
+
 	*pr = ts_data[1];
 	*pr = (*pr << 8) | ts_data[2];
-		
+
 	for(i = 0; i < FingerNum; i++) {
 		x[i] = (u8)((ts_data[3+4*i])>>4)*256 + (u8)ts_data[(3+4*i)+1];
 		y[i] = (u8)((ts_data[3+4*i]) & 0x0f)*256 + (u8)ts_data[(3+4*i)+2];
 		z[i] = (u8)((ts_data[(3+4*i)+3]) & 0x0f);
 	}
-		
+
 	//if key enable
 	if(KeyNum > 0)
 		*ky = ts_data[3+4*FingerNum];
@@ -364,18 +364,18 @@ static u8 zet6221_ts_get_report_mode_t(struct i2c_client *client)
 	u8 ts_in_data[17] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	int ret;
 	int i;
-	
+
 	ret=zet6221_i2c_write_tsdata(client, ts_report_cmd, 1);
 
 	if (ret > 0) {
 	        msleep(10);
 	        dprintk ( DEBUG_INIT, "=============== zet6221_ts_get_report_mode_t ===============\n");
 	        ret=zet6221_i2c_read_tsdata(client, ts_in_data, 17);
-			
+
 		if(ret > 0) {
 		        for(i=0;i<8;i++)
 			        pc[i]=ts_in_data[i] & 0xff;
-		
+
         		xyExchange = (ts_in_data[16] & 0x8) >> 3;
         		if(xyExchange == 1) {
         			ResolutionY = ts_in_data[9] & 0xff;
@@ -388,31 +388,31 @@ static u8 zet6221_ts_get_report_mode_t(struct i2c_client *client)
         			ResolutionY = ts_in_data[11] & 0xff;
         			ResolutionY = (ResolutionY << 8) | (ts_in_data[10] & 0xff);
         		}
-        			
+
         		FingerNum = (ts_in_data[15] & 0x7f);
         		KeyNum = (ts_in_data[15] & 0x80);
         		inChargerMode = (ts_in_data[16] & 0x2) >> 1;
-        
+
         		if(KeyNum==0)
         			bufLength  = 3 + 4*FingerNum;
         		else
         			bufLength  = 3 + 4*FingerNum + 1;
-				
+
 		} else {
 		        printk ("=============== zet6221_ts_get_report_mode_t READ ERROR ===============\n");
 			return ret;
 		}
-							
+
 	} else {
 		return ret;
 	}
-	
+
 	return 1;
 }
 
 
 /***********************************************************************
-    [function]: 
+    [function]:
 		        callback: interrupt function;
     [parameters]:
     			irq[in]:  irq value;
@@ -423,14 +423,14 @@ static u8 zet6221_ts_get_report_mode_t(struct i2c_client *client)
 ************************************************************************/
 static u32 zet6221_ts_interrupt(struct zet6221_tsdrv *ts_drv)
 {
-        dprintk(DEBUG_INT_INFO, "==========------zet6221_ts TS Interrupt-----============\n"); 
+        dprintk(DEBUG_INT_INFO, "==========------zet6221_ts TS Interrupt-----============\n");
 	queue_work(ts_drv->ts_workqueue, &ts_drv->work1);
 
 	return 0;
 }
 
 /***********************************************************************
-    [function]: 
+    [function]:
 		        callback: touch information handler;
     [parameters]:
     			_work[in]:  struct work_struct;
@@ -447,33 +447,33 @@ static void zet6221_ts_work(struct work_struct *_work)
 	u8 ret;
 	u8 pressure;
 	int i;
-	
+
 
 	if (bufLength == 0)
 		return;
-	
-	
+
+
 	if(resetCount == 1) {
 		resetCount = 0;
 		return;
 	}
 
-#if 0	
+#if 0
 	// be sure to get coordinate data when INT=LOW
 	if( gpio_read_one_pin_value(gpio_int_hdle, NULL) != 0)
 		return;
-	
+
 #endif
 	ret = zet6221_ts_get_xy_from_panel(tsclient1, x, y, z, &pr, &ky);
 	write_cmd_work(_work);
-	
+
 	if(ret == 0x3C) {
 		points = pr;
-		
+
 		#if defined(TRANSLATE_ENABLE)
 		        touch_coordinate_traslating(x, y, points);
 		#endif
-		
+
 		if(points == 0) {
 			f_up_cnt++;
 			if(f_up_cnt>=DEBOUNCE_NUMBER) {
@@ -492,19 +492,19 @@ static void zet6221_ts_work(struct work_struct *_work)
 			}
 			goto no_finger;
 		}
-		
+
 #if defined(VIRTUAL_KEY)
         KeyNum = 4;
-	if(points == 0x8000) { // only finger 1 enable. 
+	if(points == 0x8000) { // only finger 1 enable.
 
 		if(y[0] > TP_AA_Y_MAX) {
 			if( x[0]>=33 && x[0]<=122 && y[0]>=897 && y[0]<=1019 )
 				ky=0x1;
-		        else if(x[0]>=184 && x[0]<=273 && y[0]>=897 && y[0]<=1019 ) 
+		        else if(x[0]>=184 && x[0]<=273 && y[0]>=897 && y[0]<=1019 )
 				ky=0x2;
-			else if(x[0]>=363 && x[0]<=451 && y[0]>=897 && y[0]<=1019 ) 
+			else if(x[0]>=363 && x[0]<=451 && y[0]>=897 && y[0]<=1019 )
 				ky=0x4;
-			else if(x[0]>=527 && x[0]<=615 && y[0]>=897 && y[0]<=1019 ) 
+			else if(x[0]>=527 && x[0]<=615 && y[0]>=897 && y[0]<=1019 )
 				ky=0x8;
 			goto Key_finger;
 		}
@@ -520,9 +520,9 @@ static void zet6221_ts_work(struct work_struct *_work)
                         px = x[i];
 		        py = y[i];
                         pz = z[i];
-				
+
 #if defined(VIRTUAL_KEY)
-                        if(py > TP_AA_Y_MAX) 
+                        if(py > TP_AA_Y_MAX)
 			        py = TP_AA_Y_MAX;
 #endif
 
@@ -534,7 +534,7 @@ static void zet6221_ts_work(struct work_struct *_work)
 	    		input_report_abs(ts->input, ABS_MT_TOUCH_MAJOR, pz);
 	    		input_report_abs(ts->input, ABS_MT_POSITION_X, px);
 	    		input_report_abs(ts->input, ABS_MT_POSITION_Y, py);
-#ifndef MT_TYPE_B	    		
+#ifndef MT_TYPE_B
 	    		input_mt_sync(ts->input);
 #endif
 
@@ -543,7 +543,7 @@ static void zet6221_ts_work(struct work_struct *_work)
 		        input_mt_slot(ts->input, i);
 			input_mt_report_slot_state(ts->input, MT_TOOL_FINGER,false);
 			input_report_abs(ts->input, ABS_MT_TRACKING_ID, -1);
-#endif				
+#endif
 		}
 	}
 #ifdef MT_TYPE_B
@@ -553,12 +553,12 @@ static void zet6221_ts_work(struct work_struct *_work)
 //Key_finger:
 no_finger:
                 if(KeyNum > 0) {
-                        for(i=0;i<MAX_KEY_NUMBER;i++) {			
+                        for(i=0;i<MAX_KEY_NUMBER;i++) {
         		        pressure = ky & ( 0x01 << i );
                                 switch(i) {
         			case 0:
         			        if(pressure) {
-        				        if(!key_search_pressed) {					
+        				        if(!key_search_pressed) {
                                                         input_report_key(ts->input, KEY_SEARCH, 1);
                                                         key_search_pressed = 0x1;
         					}
@@ -568,11 +568,11 @@ no_finger:
                                                         key_search_pressed = 0x0;
         					}
         				}
-        						
+
         				break;
         			case 1:
         			        if(pressure) {
-        				        if(!key_back_pressed) {							
+        				        if(!key_back_pressed) {
                                                         input_report_key(ts->input, KEY_BACK, 1);
                                                         key_back_pressed = 0x1;
         					}
@@ -618,11 +618,11 @@ no_finger:
         			case 7:
         				break;
         			}
-        
+
         		}
         	}
 
-		input_sync(ts->input);		
+		input_sync(ts->input);
 	}
 
 }
@@ -633,13 +633,13 @@ static void ts_early_suspend(struct early_suspend *h)
 	//Sleep Mode
 #if 1
 	//struct zet6221_tsdrv *zet6221_ts;
-	u8 ts_sleep_cmd[1] = {0xb1}; 
+	u8 ts_sleep_cmd[1] = {0xb1};
 	int ret=0;
 	ret=zet6221_i2c_write_tsdata(this_client, ts_sleep_cmd, 1);
 #endif
         sw_gpio_eint_set_enable(CTP_IRQ_NUMBER,0);
 
-	return;	        
+	return;
 }
 
 static void ts_late_resume(struct early_suspend *h)
@@ -648,14 +648,14 @@ static void ts_late_resume(struct early_suspend *h)
 	resetCount = 1;
 	ctp_wakeup(config_info.wakeup_number, 0, 10);
 	msleep(100);
-	
+
 #else
 	//struct zet6221_tsdrv *zet6221_ts;
 	ctp_wakeup(config_info.wakeup_number, 0, 10);
 	msleep(100);
 	u8 ts_wakeup_cmd[1] = {0xb4};
 	zet6221_i2c_write_tsdata(this_client, ts_wakeup_cmd, 1);
-	
+
 #endif
         sw_gpio_eint_set_enable(CTP_IRQ_NUMBER,1);
 	ChargeChange = 0;
@@ -669,7 +669,7 @@ static void ts_late_resume(struct early_suspend *h)
 u8 zet622x_ts_sndpwd(struct i2c_client *client)
 {
 	u8 ts_sndpwd_cmd[3] = {0x20,0xC5,0x9D};
-	
+
 	int ret;
 
 	ret=zet6221_i2c_write_tsdata(client, ts_sndpwd_cmd, 3);
@@ -687,16 +687,16 @@ u8 zet622x_ts_option(struct i2c_client *client)
 	int ret;
 	u16 model;
 	int i;
-	
-	printk("\noption write : "); 
+
+	printk("\noption write : ");
 
 	ret=zet6221_i2c_write_tsdata(client, ts_cmd, 1);
 
 	msleep(1);
-	
-	printk("%02x ",ts_cmd[0]); 
-	
-	printk("\nread : "); 
+
+	printk("%02x ",ts_cmd[0]);
+
+	printk("\nread : ");
 
 	ret=zet6221_i2c_read_tsdata(client, ts_in_data, 16);
 
@@ -704,36 +704,36 @@ u8 zet622x_ts_option(struct i2c_client *client)
 
 	for(i=0;i<16;i++)
 	{
-		printk("%02x ",ts_in_data[i]); 
+		printk("%02x ",ts_in_data[i]);
 	}
-	printk("\n"); 
+	printk("\n");
 
 	model = 0x0;
 	model = ts_in_data[7];
 	model = (model << 8) | ts_in_data[6];
-	
-	switch(model) { 
-        case 0xFFFF: 
+
+	switch(model) {
+        case 0xFFFF:
         	ret = 1;
             ic_model = 0;
 			for(i=0;i<8;i++)
 			{
 				fb[i]=fb21[i];
 			}
-			
+
 #if defined(High_Impendence_Mode)
 
 			if(ts_in_data[2] != 0xf1)
 			{
-			
+
 				if(zet622x_ts_sfr(client)==0)
 				{
 					return 0;
 				}
-			
+
 				ret=zet6221_i2c_write_tsdata(client, ts_cmd_erase, 1);
 				msleep(1);
-			
+
 				for(i=2;i<18;i++)
 				{
 					ts_out_data[i]=ts_in_data[i-2];
@@ -741,18 +741,18 @@ u8 zet622x_ts_option(struct i2c_client *client)
 				ts_out_data[0] = 0x21;
 				ts_out_data[1] = 0xc5;
 				ts_out_data[4] = 0xf1;
-			
+
 				ret=zet6221_i2c_write_tsdata(client, ts_out_data, 18);
 				msleep(1);
-			
+
 				//
 				ret=zet6221_i2c_write_tsdata(client, ts_cmd, 1);
 
 				msleep(1);
-	
-				printk("%02x ",ts_cmd[0]); 
-	
-				printk("\n(2)read : "); 
+
+				printk("%02x ",ts_cmd[0]);
+
+				printk("\n(2)read : ");
 
 				ret=zet6221_i2c_read_tsdata(client, ts_in_data, 16);
 
@@ -760,14 +760,14 @@ u8 zet622x_ts_option(struct i2c_client *client)
 
 				for(i=0;i<16;i++)
 				{
-					printk("%02x ",ts_in_data[i]); 
+					printk("%02x ",ts_in_data[i]);
 				}
-				printk("\n"); 
-				
+				printk("\n");
+
 			}
-									
-#endif					
-            break; 
+
+#endif
+            break;
         case 0x6223:
         	ret = 1;
 			ic_model = 1;
@@ -775,10 +775,10 @@ u8 zet622x_ts_option(struct i2c_client *client)
 			{
 				fb[i]=fb23[i];
 			}
-            break; 
-        default: 
-            ret=0; 
-    } 
+            break;
+        default:
+            ret=0;
+    }
 
 	return ret;
 }
@@ -791,16 +791,16 @@ u8 zet622x_ts_sfr(struct i2c_client *client)
 	u8 ts_cmd17[17] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	int ret;
 	int i;
-	
-	printk("\nwrite : "); 
+
+	printk("\nwrite : ");
 
 	ret=zet6221_i2c_write_tsdata(client, ts_cmd, 1);
 
 	msleep(1);
-	
-	printk("%02x ",ts_cmd[0]); 
-	
-	printk("\nread : "); 
+
+	printk("%02x ",ts_cmd[0]);
+
+	printk("\nread : ");
 
 	ret=zet6221_i2c_read_tsdata(client, ts_in_data, 16);
 
@@ -809,9 +809,9 @@ u8 zet622x_ts_sfr(struct i2c_client *client)
 	for(i=0;i<16;i++)
 	{
 		ts_cmd17[i+1]=ts_in_data[i];
-		printk("%02x ",ts_in_data[i]); 
+		printk("%02x ",ts_in_data[i]);
 	}
-	printk("\n"); 
+	printk("\n");
 
 #if 1
 	if(ts_in_data[14]!=0x3D && ts_in_data[14]!=0x7D)
@@ -823,19 +823,19 @@ u8 zet622x_ts_sfr(struct i2c_client *client)
 	if(ts_in_data[14]!=0x3D)
 	{
 		ts_cmd17[15]=0x3D;
-		
-		ts_cmd17[0]=0x2B;	
-		
+
+		ts_cmd17[0]=0x2B;
+
 		ret=zet6221_i2c_write_tsdata(client, ts_cmd17, 17);
 	}
-	
+
 	return 1;
 }
 
 u8 zet622x_ts_masserase(struct i2c_client *client)
 {
 	u8 ts_cmd[1] = {0x24};
-	
+
 	int ret;
 
 	ret=zet6221_i2c_write_tsdata(client, ts_cmd, 1);
@@ -870,7 +870,7 @@ u8 zet622x_ts_pageerase(struct i2c_client *client,int npage)
 u8 zet622x_ts_resetmcu(struct i2c_client *client)
 {
 	u8 ts_cmd[1] = {0x29};
-	
+
 	int ret;
 
 	ret=zet6221_i2c_write_tsdata(client, ts_cmd, 1);
@@ -881,7 +881,7 @@ u8 zet622x_ts_resetmcu(struct i2c_client *client)
 u8 zet622x_ts_hwcmd(struct i2c_client *client)
 {
 	u8 ts_cmd[1] = {0xB9};
-	
+
 	int ret;
 
 	ret=zet6221_i2c_write_tsdata(client, ts_cmd, 1);
@@ -891,23 +891,23 @@ u8 zet622x_ts_hwcmd(struct i2c_client *client)
 
 #ifdef ZET_DOWNLOADER
 static u8 zet622x_ts_version(void)
-{	
+{
 	int i;
-		
+
 	printk("pc: ");
 	for(i=0;i<8;i++)
 		printk("%02x ",pc[i]);
 	printk("\n");
-	
+
 	printk("src: ");
 	for(i=0;i<8;i++)
 		printk("%02x ",zeitec_zet622x_firmware[fb[i]]);
 	printk("\n");
-	
+
 	for(i=0;i<8;i++)
 		if(pc[i]!=zeitec_zet622x_firmware[fb[i]])
 			return 0;
-			
+
 	return 1;
 }
 
@@ -919,29 +919,29 @@ static int __init zet622x_downloader( struct i2c_client *client )
 	int BufIndex = 0;
 	int ret;
 	int i;
-	
+
 	int nowBufLen = 0;
 	int nowBufPage = 0;
 	int nowBufIndex = 0;
 	int retryCount = 0;
-	
+
 	int i2cLength = 0;
 	int bufOffset = 0;
-	
-begin_download:	
+
+begin_download:
 	ctp_wakeup(config_info.wakeup_number, 0, 0);
 	msleep(20);
 
 	//send password
 	ret=zet622x_ts_sndpwd(client);
 	msleep(200);
-	
+
 	if(ret<=0)
 		return ret;
-		
+
 	ret=zet622x_ts_option(client);
 	msleep(200);
-	
+
 	if(ret<=0)
 		return ret;
 
@@ -949,12 +949,12 @@ begin_download:
 
 	//0~3
 	memset(zeitec_zet622x_page_in, 0x00, 131);
-	
+
 	switch(ic_model) {
 	case 0: //6221
         	zeitec_zet622x_page_in[0] = 0x25;
         	zeitec_zet622x_page_in[1] = (fb[0] >> 7);//(fb[0]/128);
-        	
+
         	i2cLength=2;
         	break;
 	case 1: //6223
@@ -964,12 +964,12 @@ begin_download:
         	i2cLength=3;
 		break;
 	}
-	
+
 	ret=zet6221_i2c_write_tsdata(client, zeitec_zet622x_page_in, i2cLength);
 
 	if(ret<=0)
 		return ret;
-	
+
 	zeitec_zet622x_page_in[0] = 0x0;
 	zeitec_zet622x_page_in[1] = 0x0;
 	zeitec_zet622x_page_in[2] = 0x0;
@@ -979,14 +979,14 @@ begin_download:
 
 	if(ret<=0)
 		return ret;
-	
+
 	printk("page=%d ",(fb[0] >> 7));//(fb[0]/128));
 	for(i=0; i<4; i++) {
 		pc[i] = zeitec_zet622x_page_in[(fb[i] & 0x7f)];//[(fb[i]%128)];
 		printk("offset[%d]=%d ",i,(fb[i] & 0x7f));//(fb[i]%128));
 	}
 	printk("\n");
-	
+
 	/*
 	printk("page=%d ",(fb[0] >> 7));
 	for(i=0;i<4;i++)
@@ -995,31 +995,31 @@ begin_download:
 	}
 	printk("\n");
 	*/
-	
+
 	//4~7
 	memset(zeitec_zet622x_page_in, 0x00, 131);
-	
+
 	switch(ic_model) {
 	case 0: //6221
 		zeitec_zet622x_page_in[0] = 0x25;
 		zeitec_zet622x_page_in[1] = (fb[4] >> 7);//(fb[4]/128);
-		
+
 		i2cLength=2;
 		break;
 	case 1: //6223
 		zeitec_zet622x_page_in[0] = 0x25;
 		zeitec_zet622x_page_in[1] = (fb[4] >> 7) & 0xff; //(fb[4]/128);
 		zeitec_zet622x_page_in[2] = (fb[4] >> 7) >> 8; //(fb[4]/128);
-		
+
 		i2cLength=3;
 		break;
 	}
-	
+
 	ret=zet6221_i2c_write_tsdata(client, zeitec_zet622x_page_in, i2cLength);
 
 	if(ret<=0)
 		return ret;
-	
+
 	zeitec_zet622x_page_in[0] = 0x0;
 	zeitec_zet622x_page_in[1] = 0x0;
 	zeitec_zet622x_page_in[2] = 0x0;
@@ -1032,13 +1032,13 @@ begin_download:
 		printk("offset[%d]=%d ",i,(fb[i] & 0x7f));  //(fb[i]%128));
 	}
 	printk("\n");
-	
+
 	if(ret<=0)
 		return ret;
-	
+
 	if(zet622x_ts_version()!=0)
 		goto exit_download;
-		
+
 /*****compare version*******/
 //proc_sfr:
 	//sfr
@@ -1049,15 +1049,15 @@ begin_download:
                 ctp_wakeup(config_info.wakeup_number, 0, 20);
 		msleep(20);
 		goto begin_download;
-		
+
 #endif
 
 	}
 	msleep(20);
-	
+
 	//comment out to enable download procedure
 	//return 1;
-	
+
 	//erase
 	if(BufLen==0) {
 		//mass erase
@@ -1070,7 +1070,7 @@ begin_download:
 		zet622x_ts_pageerase(client,BufPage);
 		msleep(200);
 	}
-	
+
 	while(BufLen>0) {
 download_page:
 		memset(zeitec_zet622x_page,0x00,131);
@@ -1078,25 +1078,25 @@ download_page:
 		nowBufIndex=BufIndex;
 		nowBufLen=BufLen;
 		nowBufPage=BufPage;
-		
+
 		switch(ic_model) {
 		case 0: //6221
 			bufOffset = 2;
 			i2cLength = 130;
-			
+
 			zeitec_zet622x_page[0] = 0x22;
-			zeitec_zet622x_page[1] = BufPage;				
+			zeitec_zet622x_page[1] = BufPage;
 			break;
 		case 1: //6223
 			bufOffset = 3;
 			i2cLength=131;
-			
+
 			zeitec_zet622x_page[0] = 0x22;
 			zeitec_zet622x_page[1] = BufPage & 0xff;
 			zeitec_zet622x_page[2] = BufPage >> 8;
 			break;
 		}
-		
+
 		if(BufLen > 128) {
 			for(i=0; i<128; i++) {
 				zeitec_zet622x_page[i+bufOffset] = zeitec_zet622x_firmware[BufIndex];
@@ -1115,7 +1115,7 @@ download_page:
 
 		ret=zet6221_i2c_write_tsdata(client, zeitec_zet622x_page, i2cLength);
 		msleep(50);
-		
+
 #if 1
 
 		memset(zeitec_zet622x_page_in, 0x00, 131);
@@ -1131,24 +1131,24 @@ download_page:
 			zeitec_zet622x_page_in[2] = BufPage >> 8;
 			i2cLength=3;
 			break;
-		}		
-		
+		}
+
 		ret=zet6221_i2c_write_tsdata(client, zeitec_zet622x_page_in, i2cLength);
 
 		zeitec_zet622x_page_in[0] = 0x0;
 		zeitec_zet622x_page_in[1] = 0x0;
 		zeitec_zet622x_page_in[2] = 0x0;
-		
+
 		ret=zet6221_i2c_read_tsdata(client, zeitec_zet622x_page_in, 128);
 
-		
+
 		for(i=0; i<128; i++) {
 			if(i < nowBufLen) {
 				if(zeitec_zet622x_page[i+bufOffset]!=zeitec_zet622x_page_in[i]) {
 					BufIndex = nowBufIndex;
 					BufLen = nowBufLen;
 					BufPage = nowBufPage;
-				
+
 					if(retryCount < 5) {
 						retryCount++;
 						goto download_page;
@@ -1162,7 +1162,7 @@ download_page:
 				}
 			}
 		}
-		
+
 #endif
 		retryCount=0;
 		BufPage+=1;
@@ -1186,16 +1186,16 @@ static int __devinit zet6221_ts_probe(struct i2c_client *client, const struct i2
 	struct input_dev *input_dev;
 	struct zet6221_tsdrv *zet6221_ts;
 	int err = -1;
-	
+
 	dprintk(DEBUG_INIT, " =====zet6221_ts_probe=====\n");
-	
+
 	zet6221_ts = kzalloc(sizeof(struct zet6221_tsdrv), GFP_KERNEL);
 	if (!zet6221_ts)	{
 		err = -ENOMEM;
 		printk("alloc_data_failed\n");
 		goto exit_alloc_data_failed;
 	}
-	
+
 	zet6221_ts->i2c_ts = client;
 	this_client = client;
 	i2c_set_clientdata(client, zet6221_ts);
@@ -1206,7 +1206,7 @@ static int __devinit zet6221_ts_probe(struct i2c_client *client, const struct i2
 		printk("ts_workqueue ts_probe error ==========\n");
 		return -ENOMEM;
 	}
-	
+
 	/*   charger detect : write_cmd */
 	INIT_WORK(&zet6221_ts->work2, write_cmd_work);
 	zet6221_ts->ts_workqueue1 = create_singlethread_workqueue(dev_name(&client->dev)); //  workqueue
@@ -1222,7 +1222,7 @@ static int __devinit zet6221_ts_probe(struct i2c_client *client, const struct i2
 		printk("input_allocate_device fail!");
 		goto fail_alloc_mem;
 	}
-	
+
 	i2c_set_clientdata(client, zet6221_ts);
 
 	input_dev->name = MJ5_TS_NAME;
@@ -1233,27 +1233,27 @@ static int __devinit zet6221_ts_probe(struct i2c_client *client, const struct i2
 	input_dev->id.version = 0x0100;
 
 	ic_model = 0; // 0:6221 1:6223
-	
-#ifdef ZET_DOWNLOADER	
+
+#ifdef ZET_DOWNLOADER
 	if(zet622x_downloader(client) <= 0)
-	        printk("ZET_DOWNLOADER fail!");	
-#endif	
+	        printk("ZET_DOWNLOADER fail!");
+#endif
 
 #if defined(TPINFO)
-        ctp_wakeup(config_info.wakeup_number, 0, 5);  
-		
+        ctp_wakeup(config_info.wakeup_number, 0, 5);
+
         if(zet6221_ts_get_report_mode_t(client)<=0) {
 	        goto exit_check_functionality_failed;
 	}
-		
+
         if(pc[3]!=0x8)  // not zeitec ic
 	        goto exit_check_functionality_failed;
-	
+
 #else
 	ResolutionX = X_MAX;
 	ResolutionY = Y_MAX;
 	FingerNum = FINGER_NUMBER;
-	KeyNum = KEY_NUMBER;   
+	KeyNum = KEY_NUMBER;
 	if(KeyNum==0)
 		bufLength  = 3+4*FingerNum;
 	else
@@ -1264,15 +1264,15 @@ static int __devinit zet6221_ts_probe(struct i2c_client *client, const struct i2
 	        ResolutionX,ResolutionY,FingerNum,KeyNum);
 
 #ifdef MT_TYPE_B
-	input_mt_init_slots(input_dev, FingerNum);	
+	input_mt_init_slots(input_dev, FingerNum);
 #endif
-	__set_bit(INPUT_PROP_DIRECT, input_dev->propbit);	
-	
+	__set_bit(INPUT_PROP_DIRECT, input_dev->propbit);
 
-        set_bit(ABS_MT_TOUCH_MAJOR, input_dev->absbit); 
-        set_bit(ABS_MT_POSITION_X, input_dev->absbit); 
-         set_bit(ABS_MT_POSITION_Y, input_dev->absbit); 
-        set_bit(ABS_MT_WIDTH_MAJOR, input_dev->absbit); 
+
+        set_bit(ABS_MT_TOUCH_MAJOR, input_dev->absbit);
+        set_bit(ABS_MT_POSITION_X, input_dev->absbit);
+         set_bit(ABS_MT_POSITION_Y, input_dev->absbit);
+        set_bit(ABS_MT_WIDTH_MAJOR, input_dev->absbit);
 	input_set_abs_params(input_dev, ABS_MT_TOUCH_MAJOR, 0, P_MAX, 0, 0);
 #if defined(VIRTUAL_KEY)
 	input_set_abs_params(input_dev, ABS_MT_POSITION_X, 0, TP_AA_X_MAX, 0, 0);
@@ -1311,16 +1311,16 @@ static int __devinit zet6221_ts_probe(struct i2c_client *client, const struct i2
 		printk("zet6221_ts_probe: request irq failed\n");
 		goto exit_irq_request_failed;
 	}
-	
+
 
 	return 0;
 
 
 exit_irq_request_failed:
         sw_gpio_irq_free(int_handle);
-fail_ip_reg:  
-        input_free_device(input_dev);      
-exit_check_functionality_failed:        
+fail_ip_reg:
+        input_free_device(input_dev);
+exit_check_functionality_failed:
 fail_alloc_mem:
         cancel_work_sync(&zet6221_ts->work1);
 	destroy_workqueue(zet6221_ts->ts_workqueue);
@@ -1328,15 +1328,15 @@ fail_alloc_mem:
 	destroy_workqueue(zet6221_ts->ts_workqueue1);
         i2c_set_clientdata(client, NULL);
 	kfree(zet6221_ts);
-exit_alloc_data_failed:        
+exit_alloc_data_failed:
 	return err;
-		
+
 }
 
 static int __devexit zet6221_ts_remove(struct i2c_client *client)
 {
 	struct zet6221_tsdrv *zet6221_ts = i2c_get_clientdata(client);
-	
+
 	//del_timer_sync(&write_timer);
 	printk("==zet6221_ts_remove=\n");
 	sw_gpio_irq_free(int_handle);
@@ -1350,7 +1350,7 @@ static int __devexit zet6221_ts_remove(struct i2c_client *client)
 	input_unregister_device(zet6221_ts->input);
 	input_free_device(zet6221_ts->input);
 	kfree(zet6221_ts);
-	
+
         i2c_set_clientdata(this_client, NULL);
 
 	return 0;
@@ -1358,7 +1358,7 @@ static int __devexit zet6221_ts_remove(struct i2c_client *client)
 
 
 static int ctp_get_system_config(void)
-{   
+{
         twi_id = config_info.twi_id;
         screen_max_x = config_info.screen_max_x;
         screen_max_y = config_info.screen_max_y;
@@ -1376,50 +1376,50 @@ static struct i2c_driver zet6221_ts_driver = {
 	.class = I2C_CLASS_HWMON,//
 	.probe	  = zet6221_ts_probe,
 	.remove		= __devexit_p(zet6221_ts_remove),
-	.id_table = zet6221_ts_idtable,	
+	.id_table = zet6221_ts_idtable,
 	.driver = {
 		.owner = THIS_MODULE,
 		.name  = ZET_TS_ID_NAME,
 	},
-	.address_list	=normal_i2c, // 
+	.address_list	=normal_i2c, //
 };
 
 static int __init zet6221_ts_init(void)
 {
 
-	int ret = -1;      
+	int ret = -1;
         dprintk(DEBUG_INIT, "****************************************************************\n");
-        
+
         if (input_fetch_sysconfig_para(&(config_info.input_type))) {
 		printk("%s: ctp_fetch_sysconfig_para err.\n", __func__);
 		return 0;
 	} else {
 		ret = input_init_platform_resource(&(config_info.input_type));
 		if (0 != ret) {
-			printk("%s:ctp_ops.init_platform_resource err. \n", __func__);    
+			printk("%s:ctp_ops.init_platform_resource err. \n", __func__);
 		}
 	}
-        
+
 	if(config_info.ctp_used == 0){
 	        printk("*** ctp_used set to 0 !\n");
 	        printk("*** if use ctp,please put the sys_config.fex ctp_used set to 1. \n");
 	        return 0;
 	}
-	
+
         if(!ctp_get_system_config()){
                 printk("%s:read config fail!\n",__func__);
                 return ret;
         }
-        
-	ctp_wakeup(config_info.wakeup_number, 0, 1); 
-	msleep(10); 
-		
+
+	ctp_wakeup(config_info.wakeup_number, 0, 1);
+	msleep(10);
+
 	zet6221_ts_driver.detect = ctp_detect;
 
 	ret = i2c_add_driver(&zet6221_ts_driver);
 	dprintk(DEBUG_INIT, "****************************************************************\n");
 	return ret;
-	
+
 }
 module_init(zet6221_ts_init);
 

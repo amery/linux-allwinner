@@ -10,7 +10,7 @@
 *
 * Author 		: javen
 *
-* Description 	: USB Device ¿ØÖÆÆ÷Çı¶¯
+* Description 	: USB Device æ§åˆ¶å™¨é©±åŠ¨
 *
 * History 		:
 *      <author>    		<time>       	<version >    		<desc>
@@ -94,7 +94,7 @@ struct sw_udc_request {
 	struct list_head		queue;		/* ep's requests */
 	struct usb_request		req;
 
-	__u32 is_queue;  /* flag. ÊÇ·ñÒÑ¾­Ñ¹Èë¶ÓÁĞ? */
+	__u32 is_queue;  /* flag. æ˜¯å¦å·²ç»å‹å…¥é˜Ÿåˆ—? */
 	enum sw_buffer_map_state map_state;
 };
 
@@ -122,12 +122,12 @@ static const char *ep0states[]= {
 typedef struct sw_udc_dma{
 	char name[32];
 	//struct sw_dma_client dma_client;
-    
-	dma_hdl_t dma_hdle;	/* dma ¾ä±ú */
+
+	dma_hdl_t dma_hdle;	/* dma å¥æŸ„ */
 	int is_start;
 }sw_udc_dma_t;
 
-/* dma ´«Êä²ÎÊı */
+/* dma ä¼ è¾“å‚æ•° */
 typedef struct sw_udc_dma_parg{
 	struct sw_udc *dev;
 	struct sw_udc_ep *ep;
@@ -135,7 +135,7 @@ typedef struct sw_udc_dma_parg{
 }sw_udc_dma_parg_t;
 
 
-/* i/o ĞÅÏ¢ */
+/* i/o ä¿¡æ¯ */
 typedef struct sw_udc_io{
 	struct resource	*usb_base_res;   	/* USB  resources 		*/
 	struct resource	*usb_base_req;   	/* USB  resources 		*/
@@ -167,7 +167,7 @@ typedef struct sw_udc {
 	spinlock_t			        lock;
     struct platform_device *pdev;
     struct device		        *controller;
-    
+
 	struct sw_udc_ep		    ep[SW_UDC_ENDPOINTS];
 	int				            address;
 	struct usb_gadget		    gadget;
@@ -189,11 +189,11 @@ typedef struct sw_udc {
 
 	sw_udc_io_t					*sw_udc_io;
 	char 						driver_name[32];
-	__u32 						usbc_no;	/* ¿ØÖÆÆ÷¶Ë¿ÚºÅ 	*/
+	__u32 						usbc_no;	/* æ§åˆ¶å™¨ç«¯å£å· 	*/
 	sw_udc_dma_t 			    sw_udc_dma[6];
 
-	u32							stoped;		/* ¿ØÖÆÆ÷Í£Ö¹¹¤×÷ 	*/
-	u32 						irq_no;		/* USB ÖĞ¶ÏºÅ 		*/
+	u32							stoped;		/* æ§åˆ¶å™¨åœæ­¢å·¥ä½œ 	*/
+	u32 						irq_no;		/* USB ä¸­æ–­å· 		*/
 #ifdef CONFIG_UDC_ACTIVE
 	int							udc_actived;
 	struct timer_list 			udc_active_timer;

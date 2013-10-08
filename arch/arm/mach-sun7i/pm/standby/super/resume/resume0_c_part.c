@@ -2,7 +2,7 @@
  * actually, these code will be load into dram when start & load the system.
  * the addr is : 0xc0f0,0000; size is 256Kbyte;
  */
-	
+
 /* these code will be located in fixed addr
  * after receive wake up signal, boot will jump to the fixed addr
  * and excecute these code, and jump to sram for continuing resume.
@@ -29,7 +29,7 @@ static int (*resume1)(void);
 #define FLUSH_TLB
 #define FLUSH_ICACHE
 #define INVALIDATE_DCACHE
-#endif 
+#endif
 
 #if defined(ENTER_SUPER_STANDBY) || defined(ENTER_SUPER_STANDBY_WITH_NOMMU) || defined(WATCH_DOG_RESET)
 #undef MMU_OPENED
@@ -93,7 +93,7 @@ int resume0_c_part(void)
 	/*restore dram training area*/
 	mem_memcpy((void *)DRAM_BASE_ADDR, (void *)DRAM_BACKUP_BASE_ADDR2, DRAM_TRANING_SIZE);
 	//busy_waiting();
-	resume1 = (int (*)(void))SRAM_FUNC_START;	
+	resume1 = (int (*)(void))SRAM_FUNC_START;
 	//move resume1 code from dram to sram
 	mem_memcpy((void *)SRAM_FUNC_START, (void *)&resume1_bin_start, (int)&resume1_bin_end - (int)&resume1_bin_start);
 	//sync
@@ -110,10 +110,10 @@ int resume0_c_part(void)
 
 	serial_puts_nommu("before jump to resume1. \n");
 	//busy_waiting();
-	resume1 = (int (*)(void))SRAM_FUNC_START_PA;	
+	resume1 = (int (*)(void))SRAM_FUNC_START_PA;
 	//move resume1 code from dram to sram
 	mem_memcpy((void *)SRAM_FUNC_START_PA, (void *)&resume1_bin_start, (int)&resume1_bin_end - (int)&resume1_bin_start);
-	//sync	
+	//sync
 
 	//jump to sram
 	resume1();
@@ -126,12 +126,12 @@ int resume0_c_part(void)
 }
 
 /*******************************************************************************
-*º¯ÊıÃû³Æ: set_pll
-*º¯ÊıÔ­ĞÍ£ºvoid set_pll( void )
-*º¯Êı¹¦ÄÜ: resumeÖĞÓÃCÓïÑÔ±àĞ´µÄ µ÷ÕûCPUÆµÂÊ
-*Èë¿Ú²ÎÊı: void
-*·µ »Ø Öµ: void
-*±¸    ×¢:
+*å‡½æ•°åç§°: set_pll
+*å‡½æ•°åŸå‹ï¼švoid set_pll( void )
+*å‡½æ•°åŠŸèƒ½: resumeä¸­ç”¨Cè¯­è¨€ç¼–å†™çš„ è°ƒæ•´CPUé¢‘ç‡
+*å…¥å£å‚æ•°: void
+*è¿” å› å€¼: void
+*å¤‡    æ³¨:
 *******************************************************************************/
 void set_pll( void )
 {

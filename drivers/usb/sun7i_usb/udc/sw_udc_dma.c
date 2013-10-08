@@ -10,7 +10,7 @@
 *
 * Author 		: javen
 *
-* Description 	: DMA ²Ù×÷¼¯
+* Description 	: DMA æ“ä½œé›†
 *
 * History 		:
 *      <author>    		<time>       	<version >    		<desc>
@@ -54,7 +54,7 @@ extern void sw_udc_dma_completion(struct sw_udc *dev, struct sw_udc_ep *ep, stru
 *                     sw_udc_switch_bus_to_dma
 *
 * Description:
-*    ÇĞ»» USB ×ÜÏß¸ø DMA
+*    åˆ‡æ¢ USB æ€»çº¿ç»™ DMA
 *
 * Parameters:
 *    void
@@ -89,7 +89,7 @@ void sw_udc_switch_bus_to_ddma(struct sw_udc_ep *ep, u32 is_tx)
 *                     sw_udc_switch_bus_to_pio
 *
 * Description:
-*    ÇĞ»» USB ×ÜÏß¸ø PIO
+*    åˆ‡æ¢ USB æ€»çº¿ç»™ PIO
 *
 * Parameters:
 *    void
@@ -114,7 +114,7 @@ void sw_udc_switch_bus_to_pio(struct sw_udc_ep *ep, __u32 is_tx)
 *                     sw_udc_enable_dma_channel_irq
 *
 * Description:
-*    Ê¹ÄÜ DMA channel ÖĞ¶Ï
+*    ä½¿èƒ½ DMA channel ä¸­æ–­
 *
 * Parameters:
 *    void
@@ -139,7 +139,7 @@ void sw_udc_enable_dma_channel_irq(struct sw_udc_ep *ep)
 *                     sw_udc_disable_dma_channel_irq
 *
 * Description:
-*    ½ûÖ¹ DMA channel ÖĞ¶Ï
+*    ç¦æ­¢ DMA channel ä¸­æ–­
 *
 * Parameters:
 *    void
@@ -164,7 +164,7 @@ void sw_udc_disable_dma_channel_irq(struct sw_udc_ep *ep)
 *                     sw_udc_dma_set_config
 *
 * Description:
-*    ÅäÖÃ DMA
+*    é…ç½® DMA
 *
 * Parameters:
 *    void
@@ -178,31 +178,31 @@ void sw_udc_disable_dma_channel_irq(struct sw_udc_ep *ep)
 *******************************************************************************
 */
 void sw_udc_dma_set_config(struct sw_udc_ep *ep, struct sw_udc_request *req, __u32 buff_addr, __u32 len)
-{	
+{
 	int ret 		= 0;
 	int ep_drq_type = 0;
-    
+
  	dma_config_t dmaconfig;
     u32 state = 2;
-	memset(&dmaconfig, 0, sizeof(dmaconfig));    
-	
+	memset(&dmaconfig, 0, sizeof(dmaconfig));
+
 	if(is_tx_ep(ep)){ /* ep in, tx*/
         switch(ep->num){
             case 1:
                 ep_drq_type = N_DST_USB_EP1;
-            break;    
+            break;
             case 2:
                 ep_drq_type = N_DST_USB_EP2;
-            break;    
+            break;
             case 3:
                 ep_drq_type = N_DST_USB_EP3;
-            break;    
+            break;
             case 4:
                 ep_drq_type = N_DST_USB_EP4;
-            break;    
+            break;
             case 5:
                 ep_drq_type = N_DST_USB_EP5;
-            break;    
+            break;
             default:
                 ep_drq_type = 0;
         }
@@ -210,14 +210,14 @@ void sw_udc_dma_set_config(struct sw_udc_ep *ep, struct sw_udc_request *req, __u
 
 		dmaconfig.src_drq_type                  = N_DST_SDRAM;
 		dmaconfig.dst_drq_type                  = ep_drq_type;
-		dmaconfig.xfer_type.src_data_width      = DATA_WIDTH_32BIT; 
-        dmaconfig.xfer_type.src_bst_len         = DATA_BRST_8;  
+		dmaconfig.xfer_type.src_data_width      = DATA_WIDTH_32BIT;
+        dmaconfig.xfer_type.src_bst_len         = DATA_BRST_8;
         dmaconfig.xfer_type.dst_data_width      = DATA_WIDTH_32BIT;
         dmaconfig.xfer_type.dst_bst_len         = DATA_BRST_8;
-		dmaconfig.address_type.src_addr_mode    = NDMA_ADDR_INCREMENT ;	
+		dmaconfig.address_type.src_addr_mode    = NDMA_ADDR_INCREMENT ;
 		dmaconfig.address_type.dst_addr_mode    = NDMA_ADDR_NOCHANGE;
-		dmaconfig.irq_spt       = CHAN_IRQ_FD;		
-		dmaconfig.bconti_mode   = false;		
+		dmaconfig.irq_spt       = CHAN_IRQ_FD;
+		dmaconfig.bconti_mode   = false;
 	}
 	else{ /* ep out, rx*/
         switch(ep->num){
@@ -241,13 +241,13 @@ void sw_udc_dma_set_config(struct sw_udc_ep *ep, struct sw_udc_request *req, __u
     	}
 		dmaconfig.src_drq_type                  = ep_drq_type;
 		dmaconfig.dst_drq_type                  = N_DST_SDRAM;
-        dmaconfig.xfer_type.src_data_width      = DATA_WIDTH_32BIT; 
-        dmaconfig.xfer_type.src_bst_len         = DATA_BRST_8;  
+        dmaconfig.xfer_type.src_data_width      = DATA_WIDTH_32BIT;
+        dmaconfig.xfer_type.src_bst_len         = DATA_BRST_8;
         dmaconfig.xfer_type.dst_data_width      = DATA_WIDTH_32BIT;
         dmaconfig.xfer_type.dst_bst_len         = DATA_BRST_8;
-		dmaconfig.address_type.src_addr_mode    = NDMA_ADDR_NOCHANGE;	
+		dmaconfig.address_type.src_addr_mode    = NDMA_ADDR_NOCHANGE;
 		dmaconfig.address_type.dst_addr_mode    = NDMA_ADDR_INCREMENT;
-		dmaconfig.irq_spt       = CHAN_IRQ_FD;			
+		dmaconfig.irq_spt       = CHAN_IRQ_FD;
 		dmaconfig.bconti_mode   = false;
 	}
 
@@ -262,7 +262,7 @@ void sw_udc_dma_set_config(struct sw_udc_ep *ep, struct sw_udc_request *req, __u
 		DMSG_PANIC("ERR: set wait state failed\n");
 		return;
 	}
-	
+
 	return;
 }
 
@@ -271,7 +271,7 @@ void sw_udc_dma_set_config(struct sw_udc_ep *ep, struct sw_udc_request *req, __u
 *                     sw_udc_dma_start
 *
 * Description:
-*    ¿ªÊ¼ DMA ´«Êä
+*    å¼€å§‹ DMA ä¼ è¾“
 *
 * Parameters:
 *    void
@@ -289,16 +289,16 @@ void sw_udc_dma_start(struct sw_udc_ep *ep, __u32 fifo, __u32 buffer, __u32 len)
     __u32 fifo_addr = 0;
 	DMSG_DBG_DMA("sw_udc_dma_start: ep(%d), fifo = 0x%x, buffer = (0x%x, 0x%x), len = 0x%x\n",
 		      ep->num, fifo, buffer, (u32)phys_to_virt(buffer), len);
-    
+
     fifo_addr = USBC_REG_EPFIFOx((u32)ep->dev->sw_udc_io->usb_vbase, ep->num);
     fifo_addr &= 0xfffffff;
-	
+
 	if(is_tx_ep(ep))
 	    sw_dma_enqueue(ep->dev->sw_udc_dma[ep->num].dma_hdle, buffer, fifo_addr, len);
-	else   
+	else
 	    sw_dma_enqueue(ep->dev->sw_udc_dma[ep->num].dma_hdle, fifo_addr, buffer, len);
     if(!ep->dev->sw_udc_dma[ep->num].is_start){
-		ep->dev->sw_udc_dma[ep->num].is_start = 1;            	
+		ep->dev->sw_udc_dma[ep->num].is_start = 1;
     	sw_dma_ctl(ep->dev->sw_udc_dma[ep->num].dma_hdle, DMA_OP_START, NULL);
     }
     return;
@@ -309,7 +309,7 @@ void sw_udc_dma_start(struct sw_udc_ep *ep, __u32 fifo, __u32 buffer, __u32 len)
 *                     sw_udc_dma_stop
 *
 * Description:
-*    ÖÕÖ¹ DMA ´«Êä
+*    ç»ˆæ­¢ DMA ä¼ è¾“
 *
 * Parameters:
 *    void
@@ -327,8 +327,8 @@ void sw_udc_dma_stop(struct sw_udc_ep *ep)
     int ret = 0;
 	DMSG_DBG_DMA("sw_udc_dma_stop\n");
 
-	ret = sw_dma_ctl((dma_hdl_t)ep->dev->sw_udc_dma[ep->num].dma_hdle, DMA_OP_STOP, NULL);	
-    ep->dev->sw_udc_dma[ep->num].is_start = 0;	
+	ret = sw_dma_ctl((dma_hdl_t)ep->dev->sw_udc_dma[ep->num].dma_hdle, DMA_OP_STOP, NULL);
+    ep->dev->sw_udc_dma[ep->num].is_start = 0;
 
     return;
 }
@@ -338,7 +338,7 @@ void sw_udc_dma_stop(struct sw_udc_ep *ep)
 *                     sw_udc_dma_transmit_length
 *
 * Description:
-*    ²éÑ¯ DMA ÒÑ¾­´«ÊäµÄ³¤¶È
+*    æŸ¥è¯¢ DMA å·²ç»ä¼ è¾“çš„é•¿åº¦
 *
 * Parameters:
 *    void
@@ -397,7 +397,7 @@ __u32 sw_udc_dma_transmit_length(struct sw_udc_ep *ep, __u32 is_in, __u32 buffer
 *                     sw_udc_dma_probe
 *
 * Description:
-*    DMA ³õÊ¼»¯
+*    DMA åˆå§‹åŒ–
 *
 * Parameters:
 *    void
@@ -420,7 +420,7 @@ __u32 sw_udc_dma_is_busy(struct sw_udc_ep *ep)
 *                     sw_udc_dma_probe
 *
 * Description:
-*    DMA ³õÊ¼»¯
+*    DMA åˆå§‹åŒ–
 *
 * Parameters:
 *    void
@@ -440,7 +440,7 @@ static void sw_udc_dma_callback(dma_hdl_t dma_hdl, void *parg)
     struct sw_udc_request *req = NULL;
     struct sw_udc_ep *ep = NULL;
     int i = 1;
-    
+
     dev = (struct sw_udc *)parg;
     if(dev == NULL) {
         DMSG_PANIC("ERR: sw_udc_dma_callback failed\n");
@@ -464,7 +464,7 @@ static void sw_udc_dma_callback(dma_hdl_t dma_hdl, void *parg)
         }
 
         /* call back */
-        if(req){            
+        if(req){
             sw_udc_dma_completion(dev, ep, req);
         }
     }else{
@@ -480,7 +480,7 @@ static void sw_udc_dma_callback(dma_hdl_t dma_hdl, void *parg)
 *                     sw_udc_dma_probe
 *
 * Description:
-*    DMA ³õÊ¼»¯
+*    DMA åˆå§‹åŒ–
 *
 * Parameters:
 *    void
@@ -535,7 +535,7 @@ __s32 sw_udc_dma_probe(struct sw_udc *dev)
 *                     sw_udc_dma_remove
 *
 * Description:
-*    DMA ÒÆ³ı
+*    DMA ç§»é™¤
 *
 * Parameters:
 *    void

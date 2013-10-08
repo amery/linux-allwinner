@@ -54,7 +54,7 @@
 #include "gslX680.h"
 #include "gsl1680.h"        //resolution:1024*600
 #include "gsl1680_1.h"      //resolution:800*480
-#include "gsl1680_2.h"      //resolution:1024*600 
+#include "gsl1680_2.h"      //resolution:1024*600
 //gsl1680_2.h and gsl1680.h difference lies in the x axis, y axis and interrupt the parameters of the differences
 #include "gsl2680.h"        //resolution:1024*768
 #include "gsl3680.h"        //resolution:2048*1563
@@ -89,7 +89,7 @@ static u32 gslX680_debug_mask = 1;
 #define GSL_PAGE_REG		0xf0
 
 #define PRESS_MAX    			255
-#define MAX_FINGERS 		10//5 //×î´óÊÖÖ¸¸öÊý
+#define MAX_FINGERS 		10//5 //æœ€å¤§æ‰‹æŒ‡ä¸ªæ•°
 #define MAX_CONTACTS 		10
 #define DMA_TRANS_LEN		0x20
 
@@ -336,7 +336,7 @@ static __inline__ void fw2buf(u8 *buf, const u32 *fw)
 static int gsl_find_fw_idx(const char* name)
 {
 	int i = 0;
-	
+
 	for (i=0; i<ARRAY_SIZE(gslx680_fw_grp); i++) {
 		if (!strcmp(name, gslx680_fw_grp[i].name))
 			return i;
@@ -580,7 +580,7 @@ static void report_data(struct gsl_ts *ts, u16 x, u16 y, u8 pressure, u8 id)
         }
         if(1 == revert_y_flag){
                 y = SCREEN_MAX_Y - y;
-        }        
+        }
 
 	dprintk(DEBUG_X_Y_INFO,"report data :id=%d,x=%d,y=%d\n",id,x,y);
 
@@ -800,7 +800,7 @@ error_alloc_dev:
 }
 static void glsX680_resume_events (struct work_struct *work)
 {
-	
+
 	gslX680_shutdown_high();
 	msleep(10);
         reset_chip(glsX680_i2c);
@@ -1038,7 +1038,7 @@ static struct i2c_driver gsl_ts_driver = {
 static int ctp_get_system_config(void)
 {
         char *name[] = {"ctp_para", "ctp_name"};
-        
+
         get_str_para(name, &fwname, 1);
 	dprintk(DEBUG_INIT,"%s:fwname:%s\n",__func__,fwname);
         fw_index = gsl_find_fw_idx(fwname);
@@ -1063,17 +1063,17 @@ static int __init gsl_ts_init(void)
 {
 	int ret = -1;
 	dprintk(DEBUG_INIT,"****************************************************************\n");
-	
+
 	if (input_fetch_sysconfig_para(&(config_info.input_type))) {
 		printk("%s: ctp_fetch_sysconfig_para err.\n", __func__);
 		return 0;
 	} else {
 		ret = input_init_platform_resource(&(config_info.input_type));
 		if (0 != ret) {
-			printk("%s:ctp_ops.init_platform_resource err. \n", __func__);    
+			printk("%s:ctp_ops.init_platform_resource err. \n", __func__);
 		}
 	}
-	
+
         if(config_info.ctp_used == 0){
 	        printk("*** ctp_used set to 0 !\n");
 	        printk("*** if use ctp,please put the sys_config.fex ctp_used set to 1. \n");
@@ -1083,7 +1083,7 @@ static int __init gsl_ts_init(void)
                 printk("%s:read config fail!\n",__func__);
                 return ret;
         }
-        
+
 	ctp_wakeup(config_info.wakeup_number, 0, 10);
 	gsl_ts_driver.detect = ctp_detect;
 	ret = i2c_add_driver(&gsl_ts_driver);

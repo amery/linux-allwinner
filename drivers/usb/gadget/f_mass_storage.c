@@ -1027,7 +1027,7 @@ static int do_write(struct fsg_common *common)
             if(curlun->zero_disk){
                 nwritten = amount;
             }else{
-            		/*ÔÚÉ¾³ıĞ¡ÎÄ¼şÊ±vfs_write¿ÉÄÜ»á³¬Ê±£¬ÒıÆğusb reset,Ôö¼ÓÑÓÊ±£¬ËÙ¶È»áÏÂ½µ*/
+            		/*åœ¨åˆ é™¤å°æ–‡ä»¶æ—¶vfs_writeå¯èƒ½ä¼šè¶…æ—¶ï¼Œå¼•èµ·usb reset,å¢åŠ å»¶æ—¶ï¼Œé€Ÿåº¦ä¼šä¸‹é™*/
 								if(amount <= 512){
 									msleep(1);
 								}
@@ -2870,7 +2870,7 @@ static struct fsg_common *fsg_common_init(struct fsg_common *common,
         rc = device_create_file(&curlun->dev, &dev_attr_zero_disk);
         if (rc)
             goto error_luns;
-#endif       
+#endif
 		if (lcfg->filename) {
 		    printk("open %s for LUN%d\n", lcfg->filename, i);
 			rc = fsg_lun_open(curlun, lcfg->filename);

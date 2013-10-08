@@ -26,12 +26,12 @@ int sw_i2c_write_bytes(struct i2c_client *client, uint8_t *data, uint16_t len)
 {
 	struct i2c_msg msg;
 	int ret=-1;
-	
+
 	msg.flags = !I2C_M_RD;
 	msg.addr = client->addr;
 	msg.len = len;
-	msg.buf = data;		
-	
+	msg.buf = data;
+
 	ret=i2c_transfer(client->adapter, &msg,1);
 	return ret;
 }
@@ -51,7 +51,7 @@ int i2c_read_bytes_addr8(struct i2c_client *client, uint8_t *buf, uint16_t len)
 	msgs[1].addr  = client->addr;
 	msgs[1].len   = len-1;
 	msgs[1].buf   = buf+1;
-	
+
 	ret=i2c_transfer(client->adapter, msgs, 2);
 	return ret;
 }
@@ -71,7 +71,7 @@ int i2c_read_bytes_addr16(struct i2c_client *client, uint8_t *buf, uint16_t len)
 	msgs[1].addr  = client->addr;
 	msgs[1].len   = len-2;
 	msgs[1].buf   = buf+2;
-	
+
 	ret=i2c_transfer(client->adapter, msgs, 2);
 	return ret;
 }
@@ -81,7 +81,7 @@ bool i2c_test(struct i2c_client * client)
 {
         int ret,retry;
         uint8_t test_data[1] = { 0 };	//only write a data address.
-        
+
         for(retry=0; retry < 5; retry++)
         {
                 ret = sw_i2c_write_bytes(client, test_data, 1);	//Test i2c.
@@ -89,9 +89,9 @@ bool i2c_test(struct i2c_client * client)
         	        break;
         	msleep(10);
         }
-        
+
         return ret==1 ? true : false;
-} 
+}
 EXPORT_SYMBOL(i2c_test);
 /*******************I2c communication interface end******************************************************/
 
@@ -117,20 +117,20 @@ bool ctp_set_int_port_rate(u32 gpio, u32 clk)
         if((clk != 0) && (clk != 1)){
                 return false;
         }
-        
+
         ret = sw_gpio_eint_get_debounce(gpio, &pdbc);
         if(ret == 0){
                 if(pdbc.clk_sel == clk){
                         return true;
                 }
         }
-        
+
         pdbc.clk_sel = clk;
         ret = sw_gpio_eint_set_debounce(gpio, pdbc);
         if(ret != 0){
                 return false;
         }
-        
+
         return true;
 }
 EXPORT_SYMBOL(ctp_set_int_port_rate);
@@ -138,15 +138,15 @@ bool ctp_get_int_port_deb(u32 gpio, u32 *clk_pre_scl)
 {
         struct gpio_eint_debounce pdbc = {0,0};
         int ret = -1;
-        
+
         ret = sw_gpio_eint_get_debounce(gpio, &pdbc);
         if(ret !=0){
                 return false;
         }
         *clk_pre_scl = pdbc.clk_pre_scl;
-        
+
         return true;
-} 
+}
 EXPORT_SYMBOL(ctp_get_int_port_deb);
 bool ctp_set_int_port_deb(u32 gpio, u32 clk_pre_scl)
 {
@@ -159,17 +159,17 @@ bool ctp_set_int_port_deb(u32 gpio, u32 clk_pre_scl)
                         return true;
                 }
         }
-        
+
         pdbc.clk_pre_scl = clk_pre_scl;
         ret = sw_gpio_eint_set_debounce(gpio, pdbc);
         if(ret != 0){
                 return false;
         }
-        
-        return true;        
+
+        return true;
 }
-EXPORT_SYMBOL(ctp_set_int_port_deb);  
-   
+EXPORT_SYMBOL(ctp_set_int_port_deb);
+
 
 /**
  * ctp_wakeup - function
@@ -178,14 +178,14 @@ EXPORT_SYMBOL(ctp_set_int_port_deb);
 int ctp_wakeup(u32 gpio, int status, int ms)
 {
        u32 gpio_status;
-        
+
         gpio_status = sw_gpio_getcfg(gpio);
         if(gpio_status != 1){
                 sw_gpio_setcfg(gpio, 1); //set output
         }
 
-        if(status == 0){               
-                if(ms == 0) { 
+        if(status == 0){
+                if(ms == 0) {
                         __gpio_set_value(gpio, 0);
                 }else {
                         __gpio_set_value(gpio, 0);
@@ -197,14 +197,14 @@ int ctp_wakeup(u32 gpio, int status, int ms)
                 if(ms == 0) {
                         __gpio_set_value(gpio, 1);
                 }else {
-                        __gpio_set_value(gpio, 1); 
+                        __gpio_set_value(gpio, 1);
                         msleep(ms);
-                        __gpio_set_value(gpio, 0); 
-                }      
+                        __gpio_set_value(gpio, 0);
+                }
         }
-        
+
         msleep(3);
-         
+
         if(gpio_status != 1){
                 sw_gpio_setcfg(gpio, gpio_status);
         }
@@ -215,16 +215,16 @@ EXPORT_SYMBOL(ctp_wakeup);
  * ctp_key_light - function
  *
  */
-#ifdef TOUCH_KEY_LIGHT_SUPPORT 
+#ifdef TOUCH_KEY_LIGHT_SUPPORT
 int ctp_key_light(gpio, int status, int ms)
 {
        u32 gpio_status;
-        
+
         gpio_status = sw_gpio_getcfg(gpio);
         if(gpio_status != 1){
                 sw_gpio_setcfg(gpio,1);
         }
-        
+
         if(status == 0){
                  if(ms == 0) {
                         __gpio_set_value(gpio, 0);
@@ -238,15 +238,15 @@ int ctp_key_light(gpio, int status, int ms)
                  if(ms == 0) {
                         __gpio_set_value(gpio, 1);
                 }else{
-                        __gpio_set_value(gpio, 1); 
+                        __gpio_set_value(gpio, 1);
                         msleep(ms);
-                        __gpio_set_value(gpio, 0); 
-                }      
+                        __gpio_set_value(gpio, 0);
+                }
         }
-        msleep(10);  
+        msleep(10);
         if(gpio_status != 1){
                 sw_gpio_setcfg(gpio, gpio_status);
-        } 
+        }
 	return 0;
 }
 EXPORT_SYMBOL(ctp_key_light);
@@ -259,22 +259,22 @@ script_item_u get_para_value(char* keyname, char* subname)
         script_item_u	val;
         script_item_value_type_e type = 0;
 
-        
+
         if((!keyname) || (!subname)) {
                printk("keyname:%s  subname:%s \n", keyname, subname);
                goto script_get_item_err;
         }
-                
+
         memset(&val, 0, sizeof(val));
         type = script_get_item(keyname, subname, &val);
-         
+
         if((SCIRPT_ITEM_VALUE_TYPE_INT != type) && (SCIRPT_ITEM_VALUE_TYPE_STR != type) &&
           (SCIRPT_ITEM_VALUE_TYPE_PIO != type)) {
 	        goto script_get_item_err;
 	}
-	
+
         return val;
-        
+
 script_get_item_err:
         printk("keyname:%s  subname:%s ,get error!\n", keyname, subname);
         val.val = -1;
@@ -287,22 +287,22 @@ void get_str_para(char* name[], char* value[], int num)
 {
         script_item_u	val;
         int ret = 0;
-        
+
         if(num < 1) {
                 printk("%s: num:%d ,error!\n", __func__, num);
                 return;
         }
-        
+
         while(ret < num)
-        {     
-                val = get_para_value(name[0],name[ret+1]); 
-                if(val.val == -1) {                        
+        {
+                val = get_para_value(name[0],name[ret+1]);
+                if(val.val == -1) {
                         val.val = 0;
                         val.str = "";
                 }
                 ret ++;
                 *value = val.str;
-                
+
                 if(ret < num)
                         value++;
 
@@ -315,16 +315,16 @@ void get_int_para(char* name[], int value[], int num)
 {
         script_item_u	val;
         int ret = 0;
-        
+
         if(num < 1) {
                 printk("%s: num:%d ,error!\n", __func__, num);
                 return;
         }
-        
+
         while(ret < num)
         {
-                val = get_para_value(name[0],name[ret + 1]); 
-                if(val.val == -1) {                        
+                val = get_para_value(name[0],name[ret + 1]);
+                if(val.val == -1) {
                         val.val = 0;
                 }
                 value[ret] = val.val;
@@ -337,16 +337,16 @@ void get_pio_para(char* name[], struct gpio_config value[], int num)
 {
         script_item_u	val;
         int ret = 0;
-        
+
         if(num < 1) {
                 printk("%s: num:%d ,error!\n", __func__, num);
                 return;
         }
-        
+
         while(ret < num)
-        {     
-                val = get_para_value(name[0],name[ret+1]); 
-                if(val.val == -1) {                        
+        {
+                val = get_para_value(name[0],name[ret+1]);
+                if(val.val == -1) {
                         val.val = 0;
                         val.gpio.gpio = -1;
                 }
@@ -362,14 +362,14 @@ EXPORT_SYMBOL(get_pio_para);
 
 /**
  * ctp_fetch_sysconfig_para - get config info from sysconfig.fex file.
- * return value:  
+ * return value:
  *                    = 0; success;
  *                    < 0; err
  */
 static int ctp_fetch_sysconfig_para(enum input_sensor_type *ctp_type)
 {
 	int ret = -1;
-	int value[10] = {0}; 
+	int value[10] = {0};
 	script_item_u	val;
 	struct ctp_config_info *data = container_of(ctp_type,
 					struct ctp_config_info, input_type);
@@ -386,10 +386,10 @@ static int ctp_fetch_sysconfig_para(enum input_sensor_type *ctp_type)
                 "ctp_wakeup",
                 "ctp_light",
 	};
-	
+
 
 	pr_info("=====%s=====. \n", __func__);
-	
+
 	for(ret = 0; ret < 9; ret ++ ) {
                 val = get_para_value(name[0],name[ret + 1]);
                 if(val.val == -1) {
@@ -400,23 +400,23 @@ static int ctp_fetch_sysconfig_para(enum input_sensor_type *ctp_type)
 	                value[ret] = val.val;
 //	                printk("%s:val.val:%d\n", __func__, val.val);
 	        } else {
-	                value[ret] = val.gpio.gpio; 
+	                value[ret] = val.gpio.gpio;
 //	                  printk("%s:val.gpio.gpio:%d\n", __func__, val.gpio.gpio);
 	        }
 	}
-	
-        data->ctp_used          = value[0];	        
+
+        data->ctp_used          = value[0];
 	data->twi_id            = value[1];
 	data->screen_max_x      = value[2];
 	data->screen_max_y      = value[3];
 	data->revert_x_flag     = value[4];
 	data->revert_y_flag     = value[5];
 	data->exchange_x_y_flag = value[6];
-	
+
 	data->int_number        = value[7];
         data->wakeup_number     = value[8];
-        
-#ifdef TOUCH_KEY_LIGHT_SUPPORT 
+
+#ifdef TOUCH_KEY_LIGHT_SUPPORT
 	val = get_para_value(name[0],name[10]);
 	if(val.val == -1) {
                         ret = -1;
@@ -424,7 +424,7 @@ static int ctp_fetch_sysconfig_para(enum input_sensor_type *ctp_type)
 	}
 	data->light_number = val.gpio.gpio;
 #endif
-	
+
 	return 0;
 
 script_get_item_err:
@@ -453,27 +453,27 @@ static void ctp_free_platform_resource(void)
  *
  */
 static int ctp_init_platform_resource(enum input_sensor_type *ctp_type)
-{	
+{
 	int cnt = 0, i = 0;
 	script_item_u  *list = NULL;
-					
+
 	cnt = script_get_pio_list("ctp_para", &list);
 	if (0 == cnt) {
 	        printk("%s:[init--ctp]get gpio list failed\n", __func__);
 		return -1;
-	}				
-					
-        /* …Í«Îgpio */
-	for (i = 0; i < cnt; i++) 
+	}
+
+        /* Áî≥ËØ∑gpio */
+	for (i = 0; i < cnt; i++)
 	        if (0 != gpio_request(list[i].gpio.gpio, NULL)){
 		        printk("%s:[init--ctp]gpio_request i:%d, gpio:%d failed\n",
 		                 __func__, i, list[i].gpio.gpio);
 		}
 
-	/* ≈‰÷√gpio list */
+	/* ÈÖçÁΩÆgpio list */
 	if (0 != sw_gpio_setall_range(&list[0].gpio, cnt))
-	        printk("[init--ctp] sw_gpio_setall_range failed\n");      
-	
+	        printk("[init--ctp] sw_gpio_setall_range failed\n");
+
 	return 0;
 }
 /*********************************CTP END***************************************/
@@ -501,7 +501,7 @@ static int gsensor_init_platform_resource(enum input_sensor_type *gsensor_type)
 
 /**
  * gsensor_fetch_sysconfig_para - get config info from sysconfig.fex file.
- * return value:  
+ * return value:
  *                    = 0; success;
  *                    < 0; err
  */
@@ -515,18 +515,18 @@ static int gsensor_fetch_sysconfig_para(enum input_sensor_type *gsensor_type)
 	        "gsensor_para",
 	        "gsensor_used",
 	        "gsensor_twi_id",
-	        
-	                
-	        
+
+
+
 	};
-        
-        get_int_para(name, value, 2);		
-	data->sensor_used       = value[0];	
+
+        get_int_para(name, value, 2);
+	data->sensor_used       = value[0];
 	data->twi_id            = value[1];
-	
+
 	if(data->sensor_used == 1)
 	        ret = 0;
-	
+
 	return ret;
 }
 
@@ -555,7 +555,7 @@ static int gyr_init_platform_resource(enum input_sensor_type *gyr_type)
 
 /**
  * gyr_fetch_sysconfig_para - get config info from sysconfig.fex file.
- * return value:  
+ * return value:
  *                    = 0; success;
  *                    < 0; err
  */
@@ -569,18 +569,18 @@ static int gyr_fetch_sysconfig_para(enum input_sensor_type *gyr_type)
 	        "gy_para",
 	        "gy_used",
 	        "gy_twi_id",
-	        
-	                
-	        
+
+
+
 	};
-        
-        get_int_para(name, value, 2);		
-	data->sensor_used       = value[0];	
+
+        get_int_para(name, value, 2);
+	data->sensor_used       = value[0];
 	data->twi_id            = value[1];
-	
+
 	if(data->sensor_used == 1)
 	        ret = 0;
-	
+
 	return ret;
 }
 
@@ -598,7 +598,7 @@ static void ir_free_platform_resource(void)
 	script_item_u *list = NULL;
 
 	gpio_cnt = script_get_pio_list("ir_para", &list);
-	
+
 	for(i = 0; i < gpio_cnt; i++)
 		gpio_free(list[i].gpio.gpio);
 }
@@ -615,49 +615,49 @@ static int ir_init_platform_resource(enum input_sensor_type *ir_type)
 	struct ir_config_info *data = container_of(ir_type,
 					struct ir_config_info, input_type);
 
-	if(0 != gpio_request(data->ir_gpio.gpio, NULL)) {	
+	if(0 != gpio_request(data->ir_gpio.gpio, NULL)) {
 		printk(KERN_ERR "ERROR: IR Gpio_request is failed\n");
 	}
 	if (0 != sw_gpio_setall_range(&(data->ir_gpio), 1)) {
 		printk(KERN_ERR "IR gpio set err!");
 		return ret;
 	}
-	
+
 	return 0;
 }
 
 /**
  * gyr_fetch_sysconfig_para - get config info from sysconfig.fex file.
- * return value:  
+ * return value:
  *                    = 0; success;
  *                    < 0; err
  */
 static int ir_fetch_sysconfig_para(enum input_sensor_type *ir_type)
 {
 	int ret = -1;
-	int value[2] = {0}; 
+	int value[2] = {0};
 	char * name[] = {
 	        "ir_para",
 	        "ir_used",
-	        "ir_rate"	        
+	        "ir_rate"
 	};
 	char * name1[] = {
 	        "ir_para",
 	        "ir_rx"
-	        
+
 	};
 	struct ir_config_info *data = container_of(ir_type,
 					struct ir_config_info, input_type);
-		
+
 	get_int_para(name, value, 2);
 	data->ir_used = value[0];
 	data->rate = value[1];
-	
+
 	get_pio_para(name1, &data->ir_gpio, 1);
-	
+
 	if(data->ir_used == 1)
 	        ret = 0;
-        
+
         return ret;
 }
 
@@ -686,7 +686,7 @@ static int ls_init_platform_resource(enum input_sensor_type *gsensor_type)
 
 /**
  * gsensor_fetch_sysconfig_para - get config info from sysconfig.fex file.
- * return value:  
+ * return value:
  *                    = 0; success;
  *                    < 0; err
  */
@@ -700,18 +700,18 @@ static int ls_fetch_sysconfig_para(enum input_sensor_type *gsensor_type)
 	        "ls_para",
 	        "ls_used",
 	        "ls_twi_id",
-	        
-	                
-	        
+
+
+
 	};
-        
-        get_int_para(name, value, 2);		
-	data->sensor_used       = value[0];	
+
+        get_int_para(name, value, 2);
+	data->sensor_used       = value[0];
 	data->twi_id            = value[1];
-	
+
 	if(data->sensor_used == 1)
 	        ret = 0;
-	
+
 	return ret;
 }
 
@@ -740,7 +740,7 @@ static int e_compass_init_platform_resource(enum input_sensor_type *gsensor_type
 
 /**
  * e_compass_fetch_sysconfig_para - get config info from sysconfig.fex file.
- * return value:  
+ * return value:
  *                    = 0; success;
  *                    < 0; err
  */
@@ -754,18 +754,18 @@ static int e_compass_fetch_sysconfig_para(enum input_sensor_type *gsensor_type)
 	        "compass_para",
 	        "compass_used",
 	        "compass_twi_id",
-	        
-	                
-	        
+
+
+
 	};
-        
-        get_int_para(name, value, 2);		
-	data->sensor_used       = value[0];	
+
+        get_int_para(name, value, 2);
+	data->sensor_used       = value[0];
 	data->twi_id            = value[1];
-	
+
 	if(data->sensor_used == 1)
 	        ret = 0;
-	
+
 	return ret;
 }
 
@@ -823,10 +823,10 @@ EXPORT_SYMBOL(input_free_platform_resource);
 int input_init_platform_resource(enum input_sensor_type *input_type)
 {
 	int ret = -1;
-	
+
 	ret = (*init_platform_resource[*input_type])(input_type);
-	
-	return ret;	
+
+	return ret;
 }
 EXPORT_SYMBOL(input_init_platform_resource);
 
@@ -834,16 +834,16 @@ EXPORT_SYMBOL(input_init_platform_resource);
  * input_fetch_sysconfig_para - get config info from sysconfig.fex file.
  * Input:
  * 	type:
- * return value:  
+ * return value:
  *                    = 0; success;
  *                    < 0; err
  */
 int input_fetch_sysconfig_para(enum input_sensor_type *input_type)
 {
 	int ret = -1;
-	
+
 	ret = (*fetch_sysconfig_para[*input_type])(input_type);
-	
+
 	return ret;
 }
 EXPORT_SYMBOL(input_fetch_sysconfig_para);

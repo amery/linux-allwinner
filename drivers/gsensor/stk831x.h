@@ -31,7 +31,7 @@
 #define	STK8312_OFSY	                0x0D	/* Y-Axis offset */
 #define	STK8312_OFSZ	                0x0E	/* Z-Axis offset */
 #define	STK8312_PLAT	                0x0F	/* Tap Latency */
-#define	STK8312_PWIN	                0x10	/* Tap Window */	
+#define	STK8312_PWIN	                0x10	/* Tap Window */
 #define	STK8312_FTH		        0x11	/* Free-Fall Threshold */
 #define	STK8312_FTM	                0x12	/* Free-Fall Time */
 #define	STK8312_STH	                0x13	/* Shake Threshold */
@@ -63,7 +63,7 @@
 #define	STK8313_OFSY	                0x10	/* Y-Axis offset */
 #define	STK8313_OFSZ	                0x11	/* Z-Axis offset */
 #define	STK8313_PLAT	                0x12	/* Tap Latency */
-#define	STK8313_PWIN	                0x13	/* Tap Window */	
+#define	STK8313_PWIN	                0x13	/* Tap Window */
 #define	STK8313_FTH	                0x14	/* Fre	e-Fall Threshold */
 #define	STK8313_FTM	                0x15	/* Free-Fall Time */
 #define	STK8313_STH	                0x16	/* Shake Threshold */
@@ -98,8 +98,8 @@ struct stk_device_info{
         char    stk831x_fth;
         char    stk831x_ftm;
         char    stk831x_sth;
-        char    stk831x_reset;       
-        
+        char    stk831x_reset;
+
         /*8312*/
         char    stk831x_ctrl;
 

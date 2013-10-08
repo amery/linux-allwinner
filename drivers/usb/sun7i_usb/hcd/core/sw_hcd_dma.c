@@ -10,7 +10,7 @@
 *
 * Author 		: javen
 *
-* Description 	: dma²Ù×÷
+* Description 	: dmaæ“ä½œ
 *
 * Notes         :
 *
@@ -39,7 +39,7 @@ static void hcd_CleanFlushDCacheRegion(void *adr, __u32 bytes)
 *                     sw_hcd_switch_bus_to_dma
 *
 * Description:
-*    ÇĞ»» USB ×ÜÏß¸ø DMA
+*    åˆ‡æ¢ USB æ€»çº¿ç»™ DMA
 *
 * Parameters:
 *    void
@@ -76,7 +76,7 @@ void sw_hcd_switch_bus_to_dma(struct sw_hcd_qh *qh, u32 is_in)
 *                     sw_hcd_switch_bus_to_pio
 *
 * Description:
-*    ÇĞ»» USB ×ÜÏß¸ø PIO
+*    åˆ‡æ¢ USB æ€»çº¿ç»™ PIO
 *
 * Parameters:
 *    void
@@ -103,7 +103,7 @@ void sw_hcd_switch_bus_to_pio(struct sw_hcd_qh *qh, __u32 is_in)
 *                     sw_hcd_enable_dma_channel_irq
 *
 * Description:
-*    Ê¹ÄÜ DMA channel ÖĞ¶Ï
+*    ä½¿èƒ½ DMA channel ä¸­æ–­
 *
 * Parameters:
 *    void
@@ -128,7 +128,7 @@ void sw_hcd_enable_dma_channel_irq(struct sw_hcd_qh *qh)
 *                     sw_hcd_disable_dma_channel_irq
 *
 * Description:
-*    ½ûÖ¹ DMA channel ÖĞ¶Ï
+*    ç¦æ­¢ DMA channel ä¸­æ–­
 *
 * Parameters:
 *    void
@@ -153,7 +153,7 @@ void sw_hcd_disable_dma_channel_irq(struct sw_hcd_qh *qh)
 *                     sw_hcd_dma_set_config
 *
 * Description:
-*    ÅäÖÃ DMA
+*    é…ç½® DMA
 *
 * Parameters:
 *    void
@@ -239,7 +239,7 @@ EXPORT_SYMBOL(sw_hcd_dma_set_config);
 *                     sw_hcd_dma_start
 *
 * Description:
-*    ¿ªÊ¼ DMA ´«Êä
+*    å¼€å§‹ DMA ä¼ è¾“
 *
 * Parameters:
 *    void
@@ -275,7 +275,7 @@ EXPORT_SYMBOL(sw_hcd_dma_start);
 *                     sw_hcd_dma_stop
 *
 * Description:
-*    ÖÕÖ¹ DMA ´«Êä
+*    ç»ˆæ­¢ DMA ä¼ è¾“
 *
 * Parameters:
 *    void
@@ -307,7 +307,7 @@ EXPORT_SYMBOL(sw_hcd_dma_stop);
 *                     sw_hcd_dma_transmit_length
 *
 * Description:
-*    ²éÑ¯ DMA ÒÑ¾­´«ÊäµÄ³¤¶È
+*    æŸ¥è¯¢ DMA å·²ç»ä¼ è¾“çš„é•¿åº¦
 *
 * Parameters:
 *    void
@@ -372,7 +372,7 @@ EXPORT_SYMBOL(sw_hcd_dma_transmit_length);
 *                     sw_hcd_dma_probe
 *
 * Description:
-*    DMA ³õÊ¼»¯
+*    DMA åˆå§‹åŒ–
 *
 * Parameters:
 *    void
@@ -411,7 +411,7 @@ static void sw_hcd_dma_callback(struct sw_dma_chan * ch, void *buf, int size, en
 *                     sw_hcd_dma_probe
 *
 * Description:
-*    DMA ³õÊ¼»¯
+*    DMA åˆå§‹åŒ–
 *
 * Parameters:
 *    void
@@ -435,7 +435,7 @@ EXPORT_SYMBOL(sw_hcd_dma_is_busy);
 *                     sw_hcd_dma_probe
 *
 * Description:
-*    DMA ³õÊ¼»¯
+*    DMA åˆå§‹åŒ–
 *
 * Parameters:
 *    void
@@ -481,7 +481,7 @@ EXPORT_SYMBOL(sw_hcd_dma_probe);
 *                     sw_hcd_dma_remove
 *
 * Description:
-*    DMA ÒÆ³ı
+*    DMA ç§»é™¤
 *
 * Parameters:
 *    void

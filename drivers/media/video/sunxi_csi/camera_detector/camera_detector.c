@@ -12,23 +12,23 @@ static __s32 camera_req_mclk_pin(__u32 csi_index)
         char *csi_para[2] = {"csi0_para", "csi1_para"};
         int	                        req_status;
 	script_item_u                   item;
-	script_item_value_type_e        type;    
+	script_item_value_type_e        type;
 
-        /* ªÒ»°gpio list */
+        /* Ëé∑Âèñgpio list */
 	type = script_get_item(csi_para[csi_index], "csi_ck", &item);
 	if(SCIRPT_ITEM_VALUE_TYPE_PIO != type) {
 		camera_err("script_get_item return type err\n");
 		return -ECFGERR;
 	}
 
-        /* …Í«Îgpio */
+        /* Áî≥ËØ∑gpio */
 	req_status = gpio_request(item.gpio.gpio, NULL);
 	if(0 != req_status) {
 		camera_err("request gpio failed\n");
                 return -ENORMALPIN;
 	}
 
-        /* ≈‰÷√gpio */
+        /* ÈÖçÁΩÆgpio */
 	if(0 != sw_gpio_setall_range(&item.gpio, 1)) {
 		camera_err("sw_gpio_setall_range failed\n");
 
@@ -36,7 +36,7 @@ static __s32 camera_req_mclk_pin(__u32 csi_index)
                 return -ECFGPIN;
 	}
 
-        /*  Õ∑≈gpio */
+        /* ÈáäÊîægpio */
 	if(0 == req_status)
 		gpio_free(item.gpio.gpio);
 
@@ -44,32 +44,32 @@ static __s32 camera_req_mclk_pin(__u32 csi_index)
 }
 
 static __s32 camera_request_clk(__u32 csi_index,
-                                        struct clk **csi_module_clk, 
-                                        struct clk **csi_clk_src, 
+                                        struct clk **csi_module_clk,
+                                        struct clk **csi_clk_src,
                                         __hdle *csi_pin_hd)
 {
         char *csi[2] = {CLK_MOD_CSI0, CLK_MOD_CSI1};
         __s32 ret = 0;
-    
+
         //*csi_pin_hd = gpio_request_ex(csi_para[csi_index], NULL);
         ret = camera_req_mclk_pin(csi_index);
         if(ret != 0) {
                 camera_err("request Mclock fail !!\n");
                 return ret;
         }
-    
+
         *csi_module_clk = clk_get(NULL, csi[csi_index]);
         if(*csi_module_clk == NULL) {
         	camera_err("get %s module clk error!\n", csi[csi_index]);
         	return -ECLKSRC;
         }
-    
+
         *csi_clk_src = clk_get(NULL, CLK_SYS_HOSC);//"hosc"
         if (*csi_clk_src == NULL) {
-                camera_err("get %s hosc source clk error!\n", csi[csi_index]);	
+                camera_err("get %s hosc source clk error!\n", csi[csi_index]);
         	return -ECLKSRC;
         }
-    
+
         ret = clk_set_parent(*csi_module_clk, *csi_clk_src);
         if (ret == -1) {
                 camera_err(" csi set parent failed \n");
@@ -97,8 +97,8 @@ static __s32 camera_request_clk(__u32 csi_index,
 static void camera_release_clk(struct clk *csi_module_clk)
 {
         clk_disable(csi_module_clk);
-        clk_put(csi_module_clk);        
-        csi_module_clk = NULL;    
+        clk_put(csi_module_clk);
+        csi_module_clk = NULL;
 }
 
 static __s32 camera_mclk_open(__camera_detector_t *camera_detector)
@@ -116,8 +116,8 @@ static __s32 camera_mclk_open(__camera_detector_t *camera_detector)
         }
 
         for (i = 0; i < csi_cnt; i++) {
-                camera_request_clk(i, &camera_detector->camera[i].module_clk, 
-                                         &camera_detector->camera[i].clk_src, 
+                camera_request_clk(i, &camera_detector->camera[i].module_clk,
+                                         &camera_detector->camera[i].clk_src,
                                          &camera_detector->camera[i].clk_pin_hdle);
         }
 
@@ -145,7 +145,7 @@ __bool camera_sub_name_exist(char *main_name, char *sub_name)
 {
         script_item_u value;
         script_item_value_type_e ret;
-        
+
         ret = script_get_item(main_name, sub_name, &value);
         if ((SCIRPT_ITEM_VALUE_TYPE_INT == ret) && (value.val == 1)) {
                 return TRUE;
@@ -228,8 +228,8 @@ static __s32 camera_get_para(__camera_detector_t *camera_detector,
 {
         __u32 para_index;
         __u32 pin_struct_size;
-        //char csi_drv_node[2][MAX_NODE_NAME_LEN] = {"/dev/video0", "/dev/video1"};  
-        char csi_drv_node[2][MAX_NODE_NAME_LEN] = {"sun5i_csi0", "sun5i_csi1"};  
+        //char csi_drv_node[2][MAX_NODE_NAME_LEN] = {"/dev/video0", "/dev/video1"};
+        char csi_drv_node[2][MAX_NODE_NAME_LEN] = {"sun5i_csi0", "sun5i_csi1"};
         __s32 ret;
 
         pin_struct_size = sizeof(__camera_gpio_set_t)/sizeof(__s32);
@@ -240,9 +240,9 @@ static __s32 camera_get_para(__camera_detector_t *camera_detector,
         else {
                 para_index = 1;
         }
-    
+
         memcpy(camera_detector->camera[camera_index].drv_node_name, csi_drv_node[para_index], MAX_NODE_NAME_LEN);
-    
+
         if (use_b_para) {
                 camera_get_sysconfig(main_name, "csi_twi_id_b",
                                         &(camera_detector->camera[camera_index].i2c_id), 1);
@@ -254,25 +254,25 @@ static __s32 camera_get_para(__camera_detector_t *camera_detector,
                 }
 
 	 camera_get_sysconfig(main_name, "csi_reset_b",
-                                (__s32 *)camera_detector->camera[camera_index].reset_pin, 
+                                (__s32 *)camera_detector->camera[camera_index].reset_pin,
                                 pin_struct_size);
         camera_get_sysconfig(main_name, "csi_power_en_b",
-                                (__s32 *)camera_detector->camera[camera_index].pwr_pin, 
+                                (__s32 *)camera_detector->camera[camera_index].pwr_pin,
                                 pin_struct_size);
         camera_get_sysconfig(main_name, "csi_stby_b",
-                                (__s32 *)camera_detector->camera[camera_index].stby_pin, 
+                                (__s32 *)camera_detector->camera[camera_index].stby_pin,
                                 pin_struct_size);
         camera_get_sysconfig(main_name, "csi_af_en_b",
-                                (__s32 *)camera_detector->camera[camera_index].af_pwr_pin, 
+                                (__s32 *)camera_detector->camera[camera_index].af_pwr_pin,
                                 pin_struct_size);
         camera_get_sysconfig(main_name, "csi_iovdd_b",
-                                (__s32 *)camera_detector->camera[camera_index].iovdd_str, 
+                                (__s32 *)camera_detector->camera[camera_index].iovdd_str,
                                 MAX_VDD_STR_LEN);
         camera_get_sysconfig(main_name, "csi_avdd_b",
-                                (__s32 *)camera_detector->camera[camera_index].avdd_str, 
+                                (__s32 *)camera_detector->camera[camera_index].avdd_str,
                                 MAX_VDD_STR_LEN);
         camera_get_sysconfig(main_name, "csi_dvdd_b",
-                                (__s32 *)camera_detector->camera[camera_index].dvdd_str, 
+                                (__s32 *)camera_detector->camera[camera_index].dvdd_str,
                                 MAX_VDD_STR_LEN);
         }
         else {
@@ -283,31 +283,31 @@ static __s32 camera_get_para(__camera_detector_t *camera_detector,
                 if (ret < 0) {
                     detect_print("if you want to use camera detector, "
                         "please add csi_facing in the [csi0_para]!! \n");
-                }		
+                }
 
                 camera_get_sysconfig(main_name, "csi_reset",
-                                        (__s32 *)camera_detector->camera[camera_index].reset_pin, 
+                                        (__s32 *)camera_detector->camera[camera_index].reset_pin,
                                         pin_struct_size);
                 camera_get_sysconfig(main_name, "csi_power_en",
-                                        (__s32 *)camera_detector->camera[camera_index].pwr_pin, 
+                                        (__s32 *)camera_detector->camera[camera_index].pwr_pin,
                                         pin_struct_size);
                 camera_get_sysconfig(main_name, "csi_stby",
-                                        (__s32 *)camera_detector->camera[camera_index].stby_pin, 
+                                        (__s32 *)camera_detector->camera[camera_index].stby_pin,
                                         pin_struct_size);
                 camera_get_sysconfig(main_name, "csi_af_en",
-                                        (__s32 *)camera_detector->camera[camera_index].af_pwr_pin, 
+                                        (__s32 *)camera_detector->camera[camera_index].af_pwr_pin,
                                         pin_struct_size);
                 camera_get_sysconfig(main_name, "csi_iovdd",
-                                        (__s32 *)camera_detector->camera[camera_index].iovdd_str, 
+                                        (__s32 *)camera_detector->camera[camera_index].iovdd_str,
                                         MAX_VDD_STR_LEN);
                 camera_get_sysconfig(main_name, "csi_avdd",
-                                        (__s32 *)camera_detector->camera[camera_index].avdd_str, 
+                                        (__s32 *)camera_detector->camera[camera_index].avdd_str,
                                         MAX_VDD_STR_LEN);
                 camera_get_sysconfig(main_name, "csi_dvdd",
-                                        (__s32 *)camera_detector->camera[camera_index].dvdd_str, 
+                                        (__s32 *)camera_detector->camera[camera_index].dvdd_str,
                                         MAX_VDD_STR_LEN);
         }
-    
+
         if (camera_detector->camera[camera_index].reset_pin->port != 0) {
                 camera_detector->camera[camera_index].reset_pin_used = 1;
         }
@@ -317,9 +317,9 @@ static __s32 camera_get_para(__camera_detector_t *camera_detector,
         if (camera_detector->camera[camera_index].stby_pin->port != 0) {
                 camera_detector->camera[camera_index].stby_pin_used = 1;
         }
-    
+
         if (strcmp(camera_detector->camera[camera_index].iovdd_str, "")) {
-                camera_detector->camera[camera_index].iovdd = 
+                camera_detector->camera[camera_index].iovdd =
                                 regulator_get(NULL, camera_detector->camera[camera_index].iovdd_str);
         if (IS_ERR(camera_detector->camera[camera_index].iovdd)) {
                 camera_err("get regulator csi_iovdd error!! \n");
@@ -329,7 +329,7 @@ static __s32 camera_get_para(__camera_detector_t *camera_detector,
 
         }
         if (strcmp(camera_detector->camera[camera_index].avdd_str, "")) {
-                camera_detector->camera[camera_index].avdd = 
+                camera_detector->camera[camera_index].avdd =
                                 regulator_get(NULL, camera_detector->camera[camera_index].avdd_str);
                 if (IS_ERR(camera_detector->camera[camera_index].avdd)) {
                         camera_err("get regulator csi_avdd error!! \n");
@@ -338,7 +338,7 @@ static __s32 camera_get_para(__camera_detector_t *camera_detector,
                 }
         }
         if (strcmp(camera_detector->camera[camera_index].dvdd_str, "")) {
-                camera_detector->camera[camera_index].dvdd = 
+                camera_detector->camera[camera_index].dvdd =
                                 regulator_get(NULL, camera_detector->camera[camera_index].dvdd_str);
                 if (IS_ERR(camera_detector->camera[camera_index].dvdd)) {
                             camera_err("get regulator csi_dvdd error!! \n");
@@ -346,7 +346,7 @@ static __s32 camera_get_para(__camera_detector_t *camera_detector,
                             return -EPMUPIN;
                 }
         }
-    
+
     return 0;
 }
 
@@ -357,7 +357,7 @@ static __s32 camera_get_board_info(__camera_detector_t *camera_detector)
         __s32 ret;
 
         //get camera number
-        if (camera_sub_name_exist(csi[0], "csi_used") 
+        if (camera_sub_name_exist(csi[0], "csi_used")
                 && camera_sub_name_exist(csi[1], "csi_used")) {
                 camera_detector->num = 2;
         }
@@ -376,7 +376,7 @@ static __s32 camera_get_board_info(__camera_detector_t *camera_detector)
         else {
                 return -ECFGERR;
         }
-    
+
         camera_get_para(camera_detector, 0, csi[0], FALSE);
         if (camera_detector->num == 2) {
                 if (camera_sub_name_exist(csi[1], "csi_used")) {
@@ -386,7 +386,7 @@ static __s32 camera_get_board_info(__camera_detector_t *camera_detector)
                         camera_get_para(camera_detector, 1, csi[0], TRUE);
                 }
         }
-    
+
         //get I2C adapter
         camera_detector->camera[0].i2c_adap = i2c_get_adapter(camera_detector->camera[0].i2c_id);
         if (camera_detector->camera[0].i2c_adap == NULL) {
@@ -401,13 +401,13 @@ static __s32 camera_get_board_info(__camera_detector_t *camera_detector)
                                 camera_err("get I2C adapter fail, I2C id: %d \n", camera_detector->camera[1].i2c_id);
 
                                 return -EI2CADAPTER;
-                        } 
+                        }
                 }
                 else {
                         camera_detector->camera[1].i2c_adap = camera_detector->camera[0].i2c_adap;
                 }
         }
-    
+
     return 0;
 }
 
@@ -427,7 +427,7 @@ static __s32 camera_init_module_list(__u32 camera_list_size)
         return 0;
 }
 
-static __s32 camera_diff_i2c_id_detect(__camera_detector_t *camera_detector, 
+static __s32 camera_diff_i2c_id_detect(__camera_detector_t *camera_detector,
                                                 __camera_list_t *camera_list,
                                                 __u32 camera_list_size)
 {
@@ -436,7 +436,7 @@ static __s32 camera_diff_i2c_id_detect(__camera_detector_t *camera_detector,
         __s32 ret = 0;
 
         detect_print("camera_diff_i2c_id_detect!!\n");
-        
+
         for (i = 0; i < camera_detector->num; i++) {
                 for (j = 0; j < camera_list_size; j++) {
                         if (camera_list[j].need_detect) {
@@ -451,21 +451,21 @@ static __s32 camera_diff_i2c_id_detect(__camera_detector_t *camera_detector,
                                 }
                         }
                 }
-        }    
-    
+        }
+
         if (camera_detector->num != camera_detected) {
                 camera_err("detect camera fail in func: camera_diff_i2c_id_detect !!\n");
 
                 return -EDETECTFAIL;
         }
-		
+
         return 0;
 }
 
-static __s32 camera_same_i2c_id_detect(__camera_detector_t *camera_detector, 
+static __s32 camera_same_i2c_id_detect(__camera_detector_t *camera_detector,
                                                   __camera_list_t *camera_list,
                                                   __u32 camera_list_size)
-{	
+{
         __u32 i, j;
 	 __u32 camera_detected = 0;
         __s32 ret = 0;
@@ -475,7 +475,7 @@ static __s32 camera_same_i2c_id_detect(__camera_detector_t *camera_detector,
         for (i = 0; i < camera_detector->num; i++) {
                 for (j = 0; j < camera_list_size; j++) {
                     if (camera_list[j].need_detect) {
-						
+
 			    camera_stby_on_sensor(j,&camera_detector->camera[0]);
 			    camera_stby_on_sensor(j,&camera_detector->camera[1]);
                         camera_list[j].pwr_on(j, &camera_detector->camera[i]);
@@ -488,21 +488,21 @@ static __s32 camera_same_i2c_id_detect(__camera_detector_t *camera_detector,
 				camera_detector->camera[i].i2c_addr = camera_list[j].i2c_addr;
 				 break;
 
-				
+
                         }
                     }
                 }
         }
         if (camera_detector->num != camera_detected)  {
                 camera_err("detect camera fail in func: camera_same_i2c_id_detect !!\n");
-        
+
                 return -EDETECTFAIL;
         }
     detect_print("camera_detector->camera[0].name=%s,camera_detector->camera[1].name=%s\n",camera_detector->camera[0].name,camera_detector->camera[1].name);
     return 0;
 }
 
-static __u32 camera_get_facing_index(__camera_detector_t *camera_detector, 
+static __u32 camera_get_facing_index(__camera_detector_t *camera_detector,
                                                __camera_facing_e camera_facing)
 {
         if (camera_detector->num == 1) {
@@ -521,7 +521,7 @@ static __u32 camera_get_facing_index(__camera_detector_t *camera_detector,
                         return 1;
                 }
         }
-    
+
     return 0;
 }
 
@@ -533,7 +533,7 @@ static ssize_t camera_num_show(struct device *dev,
         if ((camera_detector->num == 1) && strcmp(camera_detector->camera[0].name, "")) {
                 camera_num = 1;
         }
-        else if ((camera_detector->num == 2) 
+        else if ((camera_detector->num == 2)
             && strcmp(camera_detector->camera[0].name, "")
             && strcmp(camera_detector->camera[1].name, "")) {
                 camera_num = 2;
@@ -555,7 +555,7 @@ static ssize_t camera_front_name_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
         __u32 index = camera_get_facing_index(camera_detector, CAMERA_FACING_FRONT);
-    
+
         return sprintf(buf, camera_detector->camera[index].name);
 }
 
@@ -567,7 +567,7 @@ static ssize_t camera_front_name_store(struct device *dev,struct device_attribut
 
 static ssize_t camera_back_name_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
-{   
+{
         __u32 index = camera_get_facing_index(camera_detector, CAMERA_FACING_BACK);
 
         return sprintf(buf, camera_detector->camera[index].name);
@@ -581,7 +581,7 @@ static ssize_t camera_back_name_store(struct device *dev,struct device_attribute
 
 static ssize_t camera_front_node_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
-{   
+{
         __u32 index = camera_get_facing_index(camera_detector, CAMERA_FACING_FRONT);
 
         if (strcmp(camera_detector->camera[index].name, "")) {
@@ -601,7 +601,7 @@ static ssize_t camera_front_node_store(struct device *dev,struct device_attribut
 
 static ssize_t camera_back_node_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
-{   
+{
         __u32 index = camera_get_facing_index(camera_detector, CAMERA_FACING_BACK);
 
         if (strcmp(camera_detector->camera[index].name, "")) {
@@ -645,7 +645,7 @@ static const struct attribute_group *dev_attr_groups[] = {
 
 static void camera_detector_release(struct device *dev)
 {
-    
+
 }
 
 static struct device camera_detector_device = {
@@ -658,9 +658,9 @@ static int __init camera_detector_init(void) {
         __u32 camera_list_size;
         char *camera_list_para      = "camera_list_para";
         char *camera_list_para_used = "camera_list_para_used";
-    
+
 	detect_print("camera detect driver init\n");
-    
+
         if (!camera_sub_name_exist(camera_list_para, camera_list_para_used)) {
                 __s32 value, ret;
 
@@ -669,7 +669,7 @@ static int __init camera_detector_init(void) {
                         detect_print("[camera_list_para] not exist in sys_config1.fex !! \n");
                 }
                 else if (value == 0) {
-                        detect_print("[camera_list_para]->camera_list_para_used = 0," 
+                        detect_print("[camera_list_para]->camera_list_para_used = 0,"
                                 "maybe somebody does not want to use camera detector ...... \n");
                 }
 
@@ -677,14 +677,14 @@ static int __init camera_detector_init(void) {
 
                 goto exit;
         }
-        
+
         camera_detector_device.groups = dev_attr_groups;
 	err = device_register(&camera_detector_device);
 	if (err) {
 		camera_err("%s register camera detect driver as misc device error\n", __FUNCTION__);
 		goto exit;
 	}
-    
+
         memset(camera_detector, 0, sizeof(__camera_detector_t));
         err = camera_get_board_info(camera_detector);
         if (err)
@@ -692,7 +692,7 @@ static int __init camera_detector_init(void) {
                 camera_err("camera_get_board_info fail !!\n");
                 goto exit;
         }
-		
+
         camera_list_size = sizeof(camera_list) / sizeof(__camera_list_t);
         camera_init_module_list(camera_list_size);
 
@@ -710,7 +710,7 @@ static int __init camera_detector_init(void) {
         camera_mclk_close(camera_detector);
 
         return 0;
-    
+
 exit:
 	return err;
 }

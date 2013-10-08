@@ -10,7 +10,7 @@
 *
 * Author 		: javen
 *
-* Description 	: USB π‹¿Ì≥Ã–Ú
+* Description 	: USB ÁÆ°ÁêÜÁ®ãÂ∫è
 *
 * History 		:
 *      <author>    		<time>       	<version >    		<desc>
@@ -94,7 +94,7 @@ static int usb_hardware_scan_thread(void * pArg)
 		usb_hw_scan(cfg);
 		usb_msg_center(cfg);
 
-		DMSG_DBG_MANAGER("\n\n");		
+		DMSG_DBG_MANAGER("\n\n");
 	}
 
 	thread_stopped_flag = 1;
@@ -243,7 +243,7 @@ static __s32 usb_script_parse(struct usb_cfg *cfg)
             cfg->port[i].ac_enable.valid = 0;
             DMSG_PANIC("ERR: get usbc(%d) ac_enable failed\n", i);
         }
-        
+
         /* usbc usb_restrict */
         type = script_get_item(set_usbc, KEY_USB_RESTRICT_GPIO, &(cfg->port[i].restrict_gpio_set.gpio_set));
         if(type == SCIRPT_ITEM_VALUE_TYPE_PIO){
@@ -281,7 +281,7 @@ static __s32 check_usb_board_info(struct usb_cfg *cfg)
     // USB0
     //-------------------------------------
     if(cfg->port[0].enable){
-        /* ºÏ≤Èportµƒ π”√¿‡–Õ «∑Ò∫œ∑® */
+        /* Ê£ÄÊü•portÁöÑ‰ΩøÁî®Á±ªÂûãÊòØÂê¶ÂêàÊ≥ï */
         if(cfg->port[0].port_type != USB_PORT_TYPE_DEVICE
            && cfg->port[0].port_type != USB_PORT_TYPE_HOST
            && cfg->port[0].port_type != USB_PORT_TYPE_OTG){
@@ -289,14 +289,14 @@ static __s32 check_usb_board_info(struct usb_cfg *cfg)
             goto err;
         }
 
-        /* ºÏ≤ÈUSBµƒ≤Â∞ŒºÏ≤‚∑Ω Ω «∑Ò∫œ∑® */
+        /* Ê£ÄÊü•USBÁöÑÊèíÊãîÊ£ÄÊµãÊñπÂºèÊòØÂê¶ÂêàÊ≥ï */
         if(cfg->port[0].detect_type != USB_DETECT_TYPE_DP_DM
            && cfg->port[0].detect_type != USB_DETECT_TYPE_VBUS_ID){
             DMSG_PANIC("ERR: usbc0 detect_type(%d) is unkown\n", cfg->port[0].detect_type);
             goto err;
         }
 
-        /* »Áπ˚”√VBUS/IDºÏ≤‚∑Ω Ω£¨æÕ±ÿ–ÎºÏ≤Èid/vbus pin µƒ”––ß–‘ */
+        /* Â¶ÇÊûúÁî®VBUS/IDÊ£ÄÊµãÊñπÂºèÔºåÂ∞±ÂøÖÈ°ªÊ£ÄÊü•id/vbus pin ÁöÑÊúâÊïàÊÄß */
         if(cfg->port[0].detect_type == USB_DETECT_TYPE_VBUS_ID){
             if(cfg->port[0].id.valid == 0){
                 DMSG_PANIC("ERR: id pin is invaild\n");

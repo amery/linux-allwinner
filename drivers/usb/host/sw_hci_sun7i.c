@@ -17,7 +17,7 @@
 * History 		:
 *      <author>    		<time>       	<version >    		<desc>
 *    yangnaitian      2011-5-24            1.0          create this file
-*    javen            2011-7-18            1.1          Ìí¼ÓÁËÊ±ÖÓ¿ª¹ØºÍ¹©µç¿ª¹Ø
+*    javen            2011-7-18            1.1          æ·»åŠ äº†æ—¶é’Ÿå¼€å…³å’Œä¾›ç”µå¼€å…³
 *
 *************************************************************************************
 */
@@ -113,7 +113,7 @@ static void sw_usb_3g_config(struct sw_hci_hcd *sw_hci)
             usb_3g_usbc_type = 0;
         }
 
-        /* Ö»¿ª3GÊ¹ÓÃµÄÄÇ¸öÄ£×é */
+        /* åªå¼€3Gä½¿ç”¨çš„é‚£ä¸ªæ¨¡ç»„ */
         if(sw_hci->usbc_no == usb_3g_usbc_num){
             sw_hci->used = 0;
             if(sw_hci->usbc_type == usb_3g_usbc_type){
@@ -195,7 +195,7 @@ static s32 get_usb_cfg(struct sw_hci_hcd *sw_hci)
 	sw_usb_3g_config(sw_hci);
 
 	/* wifi_used */
-	if(sw_hci->host_init_state == 0){	    
+	if(sw_hci->host_init_state == 0){
 	    u32 usb_wifi_used      = 0;
 	    u32 usb_wifi_usbc_num  = 0;
 	    u32 usb_wifi_usbc_type = 0;
@@ -229,8 +229,8 @@ static s32 get_usb_cfg(struct sw_hci_hcd *sw_hci)
 				usb_wifi_usbc_type = 0;
 			}
 
-	        /* Ö»¿ªwifiÊ¹ÓÃµÄÄÇ¸öÄ£×é */
- 	        if(sw_hci->usbc_no == usb_wifi_usbc_num && 
+	        /* åªå¼€wifiä½¿ç”¨çš„é‚£ä¸ªæ¨¡ç»„ */
+ 	        if(sw_hci->usbc_no == usb_wifi_usbc_num &&
  	            sw_hci->usbc_type == usb_wifi_usbc_type){
 	            sw_hci->used = 1;
 	        }
@@ -448,19 +448,19 @@ static void UsbPhyInit(__u32 usbc_no)
 {
 //	DMSG_INFO("csr1: usbc%d: 0x%x\n", usbc_no, (u32)USBC_Readl(USBC_Phy_GetCsr(usbc_no)));
 
-    /* µ÷½Ú45Å·×è¿¹ */
+    /* è°ƒèŠ‚45æ¬§é˜»æŠ— */
 	if(usbc_no == 0){
 	    USBC_Phy_Write(usbc_no, 0x0c, 0x01, 1);
 	}
 
 //	DMSG_INFO("csr2-0: usbc%d: 0x%x\n", usbc_no, (u32)USBC_Phy_Read(usbc_no, 0x0c, 1));
 
-    /* µ÷Õû USB0 PHY µÄ·ù¶ÈºÍËÙÂÊ */
+    /* è°ƒæ•´ USB0 PHY çš„å¹…åº¦å’Œé€ŸçŽ‡ */
 	USBC_Phy_Write(usbc_no, 0x20, 0x14, 5);
 
 //	DMSG_INFO("csr2-1: usbc%d: 0x%x\n", usbc_no, (u32)USBC_Phy_Read(usbc_no, 0x20, 5));
 
-    /* µ÷½Ú disconnect ÓòÖµ */
+    /* è°ƒèŠ‚ disconnect åŸŸå€¼ */
 	USBC_Phy_Write(usbc_no, 0x2a, 2, 2);
 
 //	DMSG_INFO("csr2: usbc%d: 0x%x\n", usbc_no, (u32)USBC_Phy_Read(usbc_no, 0x2a, 2));
@@ -737,7 +737,7 @@ static void usb_passby(struct sw_hci_hcd *sw_hci, u32 enable)
 		if(enable && usb1_enable_passly_cnt == 0){
 	    	reg_value |= (1 << 10);		/* AHB Master interface INCR8 enable */
 	    	reg_value |= (1 << 9);     	/* AHB Master interface burst type INCR4 enable */
-	    	reg_value |= (1 << 8);     	/* AHB Master interface INCRX align enable */	    	
+	    	reg_value |= (1 << 8);     	/* AHB Master interface INCRX align enable */
             #ifdef CONFIG_AW_FPGA_PLATFORM
 	    	reg_value &= ~(1 << 0);
 	    	#else
@@ -1014,7 +1014,7 @@ static void sw_set_vbus(struct sw_hci_hcd *sw_hci, int is_on)
             __set_vbus(sw_hci, is_on);  /* power on */
         }else if(!is_on && usb1_set_vbus_cnt == 0){
             __set_vbus(sw_hci, is_on);  /* power off */
-        }        
+        }
     }else if(sw_hci->usbc_no == 2){
         if(is_on){
             usb2_set_vbus_cnt++;
@@ -1352,7 +1352,7 @@ static void __exit sw_hci_sun4i_exit(void)
     /* USB1 */
     exit_sw_hci(&sw_ehci0, 0);
     exit_sw_hci(&sw_ohci0, 1);
-    free_pin(&sw_ehci0);	
+    free_pin(&sw_ehci0);
 
     /* USB2 */
     exit_sw_hci(&sw_ehci1, 0);

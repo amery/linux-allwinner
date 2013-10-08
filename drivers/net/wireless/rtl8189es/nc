@@ -19,7 +19,7 @@
 ./core/rtw_mlme_ext.c:			goto _issue_probersp;
 ./core/rtw_mlme_ext.c:_issue_probersp:
 ./core/rtw_mlme_ext.c:			//DBG_871X("+issue_probersp during ap mode\n");
-./core/rtw_mlme_ext.c:			issue_probersp(padapter, get_sa(pframe), is_valid_p2p_probereq);		
+./core/rtw_mlme_ext.c:			issue_probersp(padapter, get_sa(pframe), is_valid_p2p_probereq);
 ./core/rtw_mlme_ext.c:void issue_probersp_p2p(_adapter *padapter, unsigned char *da)
 ./core/rtw_mlme_ext.c:	//	Use the OFDM rate in the P2P probe response frame. ( 6(B), 9(B), 12, 18, 24, 36, 48, 54 )
 ./core/rtw_mlme_ext.c:		if( pmlmepriv->wps_probe_resp_ie != NULL && pmlmepriv->p2p_probe_resp_ie != NULL )
@@ -32,10 +32,10 @@
 ./core/rtw_mlme_ext.c:		//	Appended WiDi info. only if we did issued_probereq_widi(), and then we saved ven. ext. in pmlmepriv->sa_ext.
 ./core/rtw_mlme_ext.c:		p2pielen = build_probe_resp_p2p_ie(pwdinfo, pframe);
 ./core/rtw_mlme_ext.c:		wfdielen = build_probe_resp_wfd_ie(pwdinfo, pframe, 0);
-./core/rtw_mlme_ext.c:	else if (pmlmepriv->wfd_probe_resp_ie != NULL && pmlmepriv->wfd_probe_resp_ie_len>0)		
+./core/rtw_mlme_ext.c:	else if (pmlmepriv->wfd_probe_resp_ie != NULL && pmlmepriv->wfd_probe_resp_ie_len>0)
 ./core/rtw_mlme_ext.c:		_rtw_memcpy(pframe, pmlmepriv->wfd_probe_resp_ie, pmlmepriv->wfd_probe_resp_ie_len);
 ./core/rtw_mlme_ext.c:		pattrib->pktlen += pmlmepriv->wfd_probe_resp_ie_len;
-./core/rtw_mlme_ext.c:		pframe += pmlmepriv->wfd_probe_resp_ie_len;		
+./core/rtw_mlme_ext.c:		pframe += pmlmepriv->wfd_probe_resp_ie_len;
 ./core/rtw_mlme_ext.c:int _issue_probereq_p2p(_adapter *padapter, u8 *da, int wait_ack)
 ./core/rtw_mlme_ext.c:			//	broadcast probe request frame
 ./core/rtw_mlme_ext.c:	//	Use the OFDM rate in the P2P probe request frame. ( 6(B), 9(B), 12(B), 24(B), 36, 48, 54 )
@@ -54,10 +54,10 @@
 ./core/rtw_mlme_ext.c:			pattrib->pktlen += pmlmepriv->wps_probe_req_ie_len;
 ./core/rtw_mlme_ext.c:			pframe += pmlmepriv->wps_probe_req_ie_len;
 ./core/rtw_mlme_ext.c:		wfdielen = build_probe_req_wfd_ie(pwdinfo, pframe);
-./core/rtw_mlme_ext.c:	else if (pmlmepriv->wfd_probe_req_ie != NULL && pmlmepriv->wfd_probe_req_ie_len>0)		
+./core/rtw_mlme_ext.c:	else if (pmlmepriv->wfd_probe_req_ie != NULL && pmlmepriv->wfd_probe_req_ie_len>0)
 ./core/rtw_mlme_ext.c:		_rtw_memcpy(pframe, pmlmepriv->wfd_probe_req_ie, pmlmepriv->wfd_probe_req_ie_len);
 ./core/rtw_mlme_ext.c:		pattrib->pktlen += pmlmepriv->wfd_probe_req_ie_len;
-./core/rtw_mlme_ext.c:		pframe += pmlmepriv->wfd_probe_req_ie_len;		
+./core/rtw_mlme_ext.c:		pframe += pmlmepriv->wfd_probe_req_ie_len;
 ./core/rtw_mlme_ext.c:	RT_TRACE(_module_rtl871x_mlme_c_,_drv_info_,("issuing probe_req, tx_len=%d\n", pattrib->last_txcmdsz));
 ./core/rtw_mlme_ext.c:inline void issue_probereq_p2p(_adapter *adapter, u8 *da)
 ./core/rtw_mlme_ext.c:	_issue_probereq_p2p(adapter, da, _FALSE);
@@ -77,7 +77,7 @@
 ./core/rtw_mlme_ext.c:			len = build_probe_resp_wfd_ie(pwdinfo, pframe, 0);
 ./core/rtw_mlme_ext.c:			if(pmlmepriv->wfd_probe_resp_ie && pmlmepriv->wfd_probe_resp_ie_len>0)
 ./core/rtw_mlme_ext.c:				len = pmlmepriv->wfd_probe_resp_ie_len;
-./core/rtw_mlme_ext.c:				_rtw_memcpy(pframe, pmlmepriv->wfd_probe_resp_ie, len);	
+./core/rtw_mlme_ext.c:				_rtw_memcpy(pframe, pmlmepriv->wfd_probe_resp_ie, len);
 ./core/rtw_mlme_ext.c:int _issue_probereq(_adapter *padapter, NDIS_802_11_SSID *pssid, u8 *da, int wait_ack)
 ./core/rtw_mlme_ext.c:	RT_TRACE(_module_rtl871x_mlme_c_,_drv_notice_,("+issue_probereq\n"));
 ./core/rtw_mlme_ext.c:		//	unicast probe request frame
@@ -86,12 +86,12 @@
 ./core/rtw_mlme_ext.c:		_rtw_memcpy(pframe, pmlmepriv->probereq_wpsie, pmlmepriv->probereq_wpsie_len);
 ./core/rtw_mlme_ext.c:		pframe += pmlmepriv->probereq_wpsie_len;
 ./core/rtw_mlme_ext.c:		pattrib->pktlen += pmlmepriv->probereq_wpsie_len;
-./core/rtw_mlme_ext.c:		//pmlmepriv->probereq_wpsie_len = 0 ;//reset to zero		
+./core/rtw_mlme_ext.c:		//pmlmepriv->probereq_wpsie_len = 0 ;//reset to zero
 ./core/rtw_mlme_ext.c:	if(pmlmepriv->wps_probe_req_ie_len>0 && pmlmepriv->wps_probe_req_ie)
 ./core/rtw_mlme_ext.c:		_rtw_memcpy(pframe, pmlmepriv->wps_probe_req_ie, pmlmepriv->wps_probe_req_ie_len);
 ./core/rtw_mlme_ext.c:		pframe += pmlmepriv->wps_probe_req_ie_len;
 ./core/rtw_mlme_ext.c:		pattrib->pktlen += pmlmepriv->wps_probe_req_ie_len;
-./core/rtw_mlme_ext.c:		//pmlmepriv->wps_probe_req_ie_len = 0 ;//reset to zero		
+./core/rtw_mlme_ext.c:		//pmlmepriv->wps_probe_req_ie_len = 0 ;//reset to zero
 ./core/rtw_mlme_ext.c:	RT_TRACE(_module_rtl871x_mlme_c_,_drv_notice_,("issuing probe_req, tx_len=%d\n", pattrib->last_txcmdsz));
 ./core/rtw_mlme_ext.c:inline void issue_probereq(_adapter *padapter, NDIS_802_11_SSID *pssid, u8 *da)
 ./core/rtw_mlme_ext.c:	_issue_probereq(padapter, pssid, da, _FALSE);
@@ -136,7 +136,7 @@
 ./core/rtw_mlme.c:		u32 free_len = pmlmepriv->wps_probe_req_ie_len;
 ./core/rtw_mlme.c:		pmlmepriv->wps_probe_req_ie_len = 0;
 ./core/rtw_mlme.c:		rtw_mfree(pmlmepriv->wps_probe_req_ie, free_len);
-./core/rtw_mlme.c:		pmlmepriv->wps_probe_req_ie = NULL;			
+./core/rtw_mlme.c:		pmlmepriv->wps_probe_req_ie = NULL;
 ./core/rtw_tdls.c:void issue_tunneled_probe_req(_adapter *padapter)
 ./core/rtw_tdls.c:void issue_tunneled_probe_rsp(_adapter *padapter, union recv_frame *precv_frame)
 ./core/rtw_tdls.c:	//	unicast probe request frame
@@ -175,7 +175,7 @@
 ./core/rtw_p2p.c:			issue_probereq_p2p(padapter, NULL);
 ./core/rtw_p2p.c:			issue_probereq_p2p(padapter, NULL);
 ./core/rtw_p2p.c:			//issue_probereq_p2p(adapter, NULL);
-./core/rtw_p2p.c://	Use the OFDM rate in the P2P probe response frame. ( 6(B), 9(B), 12, 18, 24, 36, 48, 54 )	
+./core/rtw_p2p.c://	Use the OFDM rate in the P2P probe response frame. ( 6(B), 9(B), 12, 18, 24, 36, 48, 54 )
 ./core/rtw_wapi.c:void rtw_build_probe_resp_wapi_ie(_adapter *padapter, unsigned char *pframe, struct pkt_attrib *pattrib)
 ./hal/rtl8188e/usb/usb_halinit.c:			//don't enable update TSF1 for if2 (due to TSF update when beacon/probe rsp are received)
 ./hal/rtl8188e/usb/usb_halinit.c:			//don't enable update TSF0 for if1 (due to TSF update when beacon/probe rsp are received)
@@ -183,7 +183,7 @@
 ./hal/rtl8188e/rtl8188e_cmd.c:	//3 (4) probe response * 1page
 ./hal/rtl8188e/sdio/sdio_halinit.c:			//don't enable update TSF1 for if2 (due to TSF update when beacon/probe rsp are received)
 ./hal/rtl8188e/sdio/sdio_halinit.c:			//don't enable update TSF0 for if1 (due to TSF update when beacon/probe rsp are received)
-./os_dep/linux/ioctl_cfg80211.c:		if( bss->information_elements == bss->proberesp_ies) 
+./os_dep/linux/ioctl_cfg80211.c:		if( bss->information_elements == bss->proberesp_ies)
 ./os_dep/linux/ioctl_cfg80211.c:			if( bss->len_information_elements !=  bss->len_proberesp_ies)
 ./os_dep/linux/ioctl_cfg80211.c:				DBG_8192C("error!, len_information_elements !=  bss->len_proberesp_ies\n");
 ./os_dep/linux/ioctl_cfg80211.c:static int rtw_cfg80211_set_probe_req_wpsp2pie(_adapter *padapter, char *buf, int len)
@@ -192,7 +192,7 @@
 ./os_dep/linux/ioctl_cfg80211.c:				u32 free_len = pmlmepriv->wps_probe_req_ie_len;
 ./os_dep/linux/ioctl_cfg80211.c:				pmlmepriv->wps_probe_req_ie_len = 0;
 ./os_dep/linux/ioctl_cfg80211.c:				rtw_mfree(pmlmepriv->wps_probe_req_ie, free_len);
-./os_dep/linux/ioctl_cfg80211.c:				pmlmepriv->wps_probe_req_ie = NULL;			
+./os_dep/linux/ioctl_cfg80211.c:				pmlmepriv->wps_probe_req_ie = NULL;
 ./os_dep/linux/ioctl_cfg80211.c:			pmlmepriv->wps_probe_req_ie = rtw_malloc(wps_ielen);
 ./os_dep/linux/ioctl_cfg80211.c:			if ( pmlmepriv->wps_probe_req_ie == NULL) {
 ./os_dep/linux/ioctl_cfg80211.c:			_rtw_memcpy(pmlmepriv->wps_probe_req_ie, wps_ie, wps_ielen);
@@ -215,7 +215,7 @@
 ./os_dep/linux/ioctl_cfg80211.c:				pmlmepriv->wfd_probe_req_ie = NULL;
 ./os_dep/linux/ioctl_cfg80211.c:			pmlmepriv->wfd_probe_req_ie = rtw_malloc(wfd_ielen);
 ./os_dep/linux/ioctl_cfg80211.c:			if ( pmlmepriv->wfd_probe_req_ie == NULL) {
-./os_dep/linux/ioctl_cfg80211.c:			rtw_get_wfd_ie(buf, len, pmlmepriv->wfd_probe_req_ie, &pmlmepriv->wfd_probe_req_ie_len);			
+./os_dep/linux/ioctl_cfg80211.c:			rtw_get_wfd_ie(buf, len, pmlmepriv->wfd_probe_req_ie, &pmlmepriv->wfd_probe_req_ie_len);
 ./os_dep/linux/ioctl_cfg80211.c:		rtw_cfg80211_set_probe_req_wpsp2pie(padapter, (u8 *)request->ie, request->ie_len );
 ./os_dep/linux/ioctl_cfg80211.c:static int rtw_cfg80211_set_probe_resp_wpsp2pie(struct net_device *net, char *buf, int len)
 ./os_dep/linux/ioctl_cfg80211.c:			DBG_8192C("probe_resp_wps_ielen=%d\n", wps_ielen);
@@ -223,10 +223,10 @@
 ./os_dep/linux/ioctl_cfg80211.c:				u32 free_len = pmlmepriv->wps_probe_resp_ie_len;
 ./os_dep/linux/ioctl_cfg80211.c:				pmlmepriv->wps_probe_resp_ie_len = 0;
 ./os_dep/linux/ioctl_cfg80211.c:				rtw_mfree(pmlmepriv->wps_probe_resp_ie, free_len);
-./os_dep/linux/ioctl_cfg80211.c:				pmlmepriv->wps_probe_resp_ie = NULL;			
+./os_dep/linux/ioctl_cfg80211.c:				pmlmepriv->wps_probe_resp_ie = NULL;
 ./os_dep/linux/ioctl_cfg80211.c:			pmlmepriv->wps_probe_resp_ie = rtw_malloc(wps_ielen);
 ./os_dep/linux/ioctl_cfg80211.c:			if ( pmlmepriv->wps_probe_resp_ie == NULL) {
-./os_dep/linux/ioctl_cfg80211.c:			//add PUSH_BUTTON config_method by driver self in wpsie of probe_resp at GO Mode 
+./os_dep/linux/ioctl_cfg80211.c:			//add PUSH_BUTTON config_method by driver self in wpsie of probe_resp at GO Mode
 ./os_dep/linux/ioctl_cfg80211.c:				//printk("config_method in wpsie of probe_resp = 0x%x\n", be16_to_cpu(*puconfig_method));
 ./os_dep/linux/ioctl_cfg80211.c:			_rtw_memcpy(pmlmepriv->wps_probe_resp_ie, wps_ie, wps_ielen);
 ./os_dep/linux/ioctl_cfg80211.c:			pmlmepriv->wps_probe_resp_ie_len = wps_ielen;
@@ -235,7 +235,7 @@
 ./os_dep/linux/ioctl_cfg80211.c:					u32 free_len = pmlmepriv->p2p_probe_resp_ie_len;
 ./os_dep/linux/ioctl_cfg80211.c:					pmlmepriv->p2p_probe_resp_ie_len = 0;
 ./os_dep/linux/ioctl_cfg80211.c:					rtw_mfree(pmlmepriv->p2p_probe_resp_ie, free_len);
-./os_dep/linux/ioctl_cfg80211.c:					pmlmepriv->p2p_probe_resp_ie = NULL;		
+./os_dep/linux/ioctl_cfg80211.c:					pmlmepriv->p2p_probe_resp_ie = NULL;
 ./os_dep/linux/ioctl_cfg80211.c:				pmlmepriv->p2p_probe_resp_ie = rtw_malloc(p2p_ielen);
 ./os_dep/linux/ioctl_cfg80211.c:				if ( pmlmepriv->p2p_probe_resp_ie == NULL) {
 ./os_dep/linux/ioctl_cfg80211.c:				_rtw_memcpy(pmlmepriv->p2p_probe_resp_ie, p2p_ie, p2p_ielen);
@@ -244,7 +244,7 @@
 ./os_dep/linux/ioctl_cfg80211.c:					u32 free_len = pmlmepriv->p2p_go_probe_resp_ie_len;
 ./os_dep/linux/ioctl_cfg80211.c:					pmlmepriv->p2p_go_probe_resp_ie_len = 0;
 ./os_dep/linux/ioctl_cfg80211.c:					rtw_mfree(pmlmepriv->p2p_go_probe_resp_ie, free_len);
-./os_dep/linux/ioctl_cfg80211.c:					pmlmepriv->p2p_go_probe_resp_ie = NULL;			
+./os_dep/linux/ioctl_cfg80211.c:					pmlmepriv->p2p_go_probe_resp_ie = NULL;
 ./os_dep/linux/ioctl_cfg80211.c:				pmlmepriv->p2p_go_probe_resp_ie = rtw_malloc(p2p_ielen);
 ./os_dep/linux/ioctl_cfg80211.c:				if ( pmlmepriv->p2p_go_probe_resp_ie == NULL) {
 ./os_dep/linux/ioctl_cfg80211.c:				_rtw_memcpy(pmlmepriv->p2p_go_probe_resp_ie, p2p_ie, p2p_ielen);
@@ -257,7 +257,7 @@
 ./os_dep/linux/ioctl_cfg80211.c:				pmlmepriv->wfd_probe_resp_ie = NULL;
 ./os_dep/linux/ioctl_cfg80211.c:			pmlmepriv->wfd_probe_resp_ie = rtw_malloc(wfd_ielen);
 ./os_dep/linux/ioctl_cfg80211.c:			if ( pmlmepriv->wfd_probe_resp_ie == NULL) {
-./os_dep/linux/ioctl_cfg80211.c:			rtw_get_wfd_ie(buf, len, pmlmepriv->wfd_probe_resp_ie, &pmlmepriv->wfd_probe_resp_ie_len);			
+./os_dep/linux/ioctl_cfg80211.c:			rtw_get_wfd_ie(buf, len, pmlmepriv->wfd_probe_resp_ie, &pmlmepriv->wfd_probe_resp_ie_len);
 ./os_dep/linux/ioctl_cfg80211.c:				ret = rtw_cfg80211_set_probe_resp_wpsp2pie(net, buf, len);
 ./os_dep/linux/rtw_android.c:static int wifi_probe(struct platform_device *pdev)
 ./os_dep/linux/rtw_android.c:	.probe          = wifi_probe,
@@ -280,11 +280,11 @@
 ./os_dep/linux/ioctl_linux.c:static int rtw_set_wps_probe_resp(struct net_device *dev, struct ieee_param *param, int len)
 ./os_dep/linux/ioctl_linux.c:	if(pmlmepriv->wps_probe_resp_ie)
 ./os_dep/linux/ioctl_linux.c:		rtw_mfree(pmlmepriv->wps_probe_resp_ie, pmlmepriv->wps_probe_resp_ie_len);
-./os_dep/linux/ioctl_linux.c:		pmlmepriv->wps_probe_resp_ie = NULL;			
+./os_dep/linux/ioctl_linux.c:		pmlmepriv->wps_probe_resp_ie = NULL;
 ./os_dep/linux/ioctl_linux.c:		pmlmepriv->wps_probe_resp_ie = rtw_malloc(ie_len);
 ./os_dep/linux/ioctl_linux.c:		pmlmepriv->wps_probe_resp_ie_len = ie_len;
 ./os_dep/linux/ioctl_linux.c:		if ( pmlmepriv->wps_probe_resp_ie == NULL) {
-./os_dep/linux/ioctl_linux.c:		_rtw_memcpy(pmlmepriv->wps_probe_resp_ie, param->u.bcn_ie.buf, ie_len);		
+./os_dep/linux/ioctl_linux.c:		_rtw_memcpy(pmlmepriv->wps_probe_resp_ie, param->u.bcn_ie.buf, ie_len);
 ./os_dep/linux/ioctl_linux.c:			ret = rtw_set_wps_probe_resp(dev, param, p->length);
 ./os_dep/linux/ioctl_linux.c:		u8 *probereq_wpsie = ext;
 ./os_dep/linux/ioctl_linux.c:		int probereq_wpsie_len = len;
@@ -297,11 +297,11 @@
 ./os_dep/linux/ioctl_linux.c:				u32 free_len = pmlmepriv->wps_probe_req_ie_len;
 ./os_dep/linux/ioctl_linux.c:				pmlmepriv->wps_probe_req_ie_len = 0;
 ./os_dep/linux/ioctl_linux.c:				rtw_mfree(pmlmepriv->wps_probe_req_ie, free_len);
-./os_dep/linux/ioctl_linux.c:				pmlmepriv->wps_probe_req_ie = NULL;			
+./os_dep/linux/ioctl_linux.c:				pmlmepriv->wps_probe_req_ie = NULL;
 ./os_dep/linux/ioctl_linux.c:			pmlmepriv->wps_probe_req_ie = rtw_malloc(cp_sz);
 ./os_dep/linux/ioctl_linux.c:			if ( pmlmepriv->wps_probe_req_ie == NULL) {
 ./os_dep/linux/ioctl_linux.c:			_rtw_memcpy(pmlmepriv->wps_probe_req_ie, probereq_wpsie, cp_sz);
-./os_dep/linux/ioctl_linux.c:			pmlmepriv->wps_probe_req_ie_len = cp_sz;					
+./os_dep/linux/ioctl_linux.c:			pmlmepriv->wps_probe_req_ie_len = cp_sz;
 ./os_dep/linux/ioctl_linux.c:	else if (_rtw_memcmp( extra, "tprobe=", 6 ) )
 ./os_dep/linux/ioctl_linux.c:		issue_tunneled_probe_req((_adapter *)rtw_netdev_priv(dev));
 ./os_dep/linux/ioctl_linux.c:static int rtw_widi_set_probe_request(struct net_device *dev,

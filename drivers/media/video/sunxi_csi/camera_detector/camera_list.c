@@ -1,7 +1,7 @@
 #include "camera_list.h"
 
 __hdle camera_gpio_request(__camera_gpio_set_t *gpio_list, __u32 group_count_max)
-{    
+{
         __hdle ret = 0;
         struct gpio_config pcfg;
 
@@ -28,13 +28,13 @@ __hdle camera_gpio_request(__camera_gpio_set_t *gpio_list, __u32 group_count_max
                 list_print("OSAL_GPIO_Request ok, gpio_name=%s, gpio=%d,mul_sel=%d\n", gpio_list->gpio_name, gpio_list->gpio, gpio_list->mul_sel);
                 ret = pcfg.gpio;
         }
-        
+
         return ret;
 }
 
 //if_release_to_default_status:
-    //Èç¹ûÊÇ0»òÕß1£¬±íÊ¾ÊÍ·ÅºóµÄGPIO´¦ÓÚÊäÈë×´Ì¬£¬ÊäÈë×´×´Ì¬²»»áµ¼ÖÂÍâ²¿µçÆ½µÄ´íÎó¡£
-    //Èç¹ûÊÇ2£¬±íÊ¾ÊÍ·ÅºóµÄGPIO×´Ì¬²»±ä£¬¼´ÊÍ·ÅµÄÊ±ºò²»¹ÜÀíµ±Ç°GPIOµÄÓ²¼þ¼Ä´æÆ÷¡£
+    //å¦‚æžœæ˜¯0æˆ–è€…1ï¼Œè¡¨ç¤ºé‡Šæ”¾åŽçš„GPIOå¤„äºŽè¾“å…¥çŠ¶æ€ï¼Œè¾“å…¥çŠ¶çŠ¶æ€ä¸ä¼šå¯¼è‡´å¤–éƒ¨ç”µå¹³çš„é”™è¯¯ã€‚
+    //å¦‚æžœæ˜¯2ï¼Œè¡¨ç¤ºé‡Šæ”¾åŽçš„GPIOçŠ¶æ€ä¸å˜ï¼Œå³é‡Šæ”¾çš„æ—¶å€™ä¸ç®¡ç†å½“å‰GPIOçš„ç¡¬ä»¶å¯„å­˜å™¨ã€‚
 __s32 camera_gpio_release(__hdle p_handler, __s32 if_release_to_default_status)
 {
         if(p_handler)
@@ -52,12 +52,12 @@ __s32 camera_gpio_write(__camera_gpio_set_t *gpio_list, __u32 gpio_value)
 {
     __camera_gpio_set_t  gpio_info[1];
     __hdle hdl;
-    
+
     if (gpio_list->gpio) {
         memcpy(gpio_info, gpio_list, sizeof(__camera_gpio_set_t));
-        
+
         gpio_info->data = gpio_value;
-        
+
         hdl = camera_gpio_request(gpio_info, 1);
         camera_gpio_release(hdl, 2);
     }
@@ -69,29 +69,29 @@ __s32 camera_gpio_set_status(__camera_gpio_set_t *gpio_list, __u32 gpio_status)
 {
     __camera_gpio_set_t  gpio_info[1];
     __hdle hdl;
-    
+
     if (gpio_list->gpio) {
         memcpy(gpio_info, gpio_list, sizeof(__camera_gpio_set_t));
-        
+
         gpio_info->mul_sel = gpio_status;
-        
+
         hdl = camera_gpio_request(gpio_info, 1);
         camera_gpio_release(hdl, 2);
     }
-    
+
     return 0;
 }
 
-__u32 camera_i2c_read(struct i2c_adapter *i2c_adap, __u8 *reg, __u8 *value, 
+__u32 camera_i2c_read(struct i2c_adapter *i2c_adap, __u8 *reg, __u8 *value,
                              __u32 i2c_addr, __u32 REG_ADDR_STEP, __u32 REG_DATA_STEP)
 {
 	__u8 data[4];
 	struct i2c_msg msg;
 	int ret,i;
-	
+
 	for(i = 0; i < REG_ADDR_STEP; i++)
 		data[i] = reg[i];
-	
+
 	data[REG_ADDR_STEP] = 0xff;
 	/*
 	 * Send out the register address...
@@ -108,11 +108,11 @@ __u32 camera_i2c_read(struct i2c_adapter *i2c_adap, __u8 *reg, __u8 *value,
 	/*
 	 * ...then read back the result.
 	 */
-	
+
 	msg.flags = I2C_M_RD;
 	msg.len = REG_DATA_STEP;
 	msg.buf = &data[REG_ADDR_STEP];
-	
+
 	ret = i2c_transfer(i2c_adap, &msg, 1);
 	if (ret >= 0) {
 		for(i = 0; i < REG_DATA_STEP; i++)
@@ -125,28 +125,28 @@ __u32 camera_i2c_read(struct i2c_adapter *i2c_adap, __u8 *reg, __u8 *value,
 	return ret;
 }
 
-__u32 camera_i2c_write(struct i2c_adapter *i2c_adap, __u8 *reg, __u8 *value, 
+__u32 camera_i2c_write(struct i2c_adapter *i2c_adap, __u8 *reg, __u8 *value,
                               __u32 i2c_addr, __u32 REG_ADDR_STEP, __u32 REG_DATA_STEP)
 {
 	struct i2c_msg msg;
 	unsigned char data[4];
 	int ret,i;
-	
+
 	for(i = 0; i < REG_ADDR_STEP; i++) {
 	    data[i] = reg[i];
         list_print("reg[%d]:%d->data[%d]:%d\n", i, reg[i], i, data[i]);
 	}
 	for(i = REG_ADDR_STEP; i < (REG_ADDR_STEP + REG_DATA_STEP); i++) {
-        list_print("value[%d]:%d->data[%d]:%d\n", 
+        list_print("value[%d]:%d->data[%d]:%d\n",
                                 i-REG_ADDR_STEP, value[i], i, data[i]);
 		data[i] = value[i-REG_ADDR_STEP];
 	}
-	
+
 	msg.addr = i2c_addr>>1;
 	msg.flags = 0;
 	msg.len = REG_ADDR_STEP + REG_DATA_STEP;
 	msg.buf = data;
-    
+
 	ret = i2c_transfer(i2c_adap, &msg, 1);
 	if (ret > 0) {
 		ret = 0;
@@ -158,7 +158,7 @@ __u32 camera_i2c_write(struct i2c_adapter *i2c_adap, __u8 *reg, __u8 *value,
 }
 
  void camera_stby_on_sensor(__u32 list_index, __camera_info_t *camera_info)
-{    
+{
     //reset on io
     camera_gpio_write(camera_info->stby_pin, camera_list[list_index].CSI_STBY_ON);
 }
@@ -201,7 +201,7 @@ static void camera_pwr_on_ov7670(__u32 list_index, __camera_info_t *camera_info)
 	camera_gpio_write(camera_info->reset_pin, camera_list[list_index].CSI_RST_ON);
 	mdelay(100);
 	camera_gpio_write(camera_info->reset_pin, camera_list[list_index].CSI_RST_OFF);
-	mdelay(100);    
+	mdelay(100);
 }
 
 static void camera_pwr_off_ov7670(__u32 list_index, __camera_info_t *camera_info)
@@ -222,7 +222,7 @@ static void camera_pwr_off_ov7670(__u32 list_index, __camera_info_t *camera_info
 	}
 	if(camera_info->dvdd) {
 		regulator_disable(camera_info->dvdd);
-		mdelay(10);	
+		mdelay(10);
 	}
 	camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_OFF);
 	mdelay(10);
@@ -230,7 +230,7 @@ static void camera_pwr_off_ov7670(__u32 list_index, __camera_info_t *camera_info
 	clk_disable(camera_info->module_clk);
 	//set the io to hi-z
 	camera_gpio_set_status(camera_info->reset_pin,0);//set the gpio to input
-	//camera_gpio_set_status(camera_info->stby_pin,0);//set the gpio to input    
+	//camera_gpio_set_status(camera_info->stby_pin,0);//set the gpio to input
 }
 
 static __s32 camera_detect_ov7670(__u32 list_index, struct i2c_adapter *i2c_adap)
@@ -245,7 +245,7 @@ static __s32 camera_detect_ov7670(__u32 list_index, struct i2c_adapter *i2c_adap
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
 
     list_print("try to detect ov7670 ... \n");
-    
+
     for (i = 0; i < 4; i++) {
     	ret = camera_i2c_read(i2c_adap, &reg_num[i], &value, i2c_addr, addr_step, data_step);
     	if (ret < 0) {
@@ -255,7 +255,7 @@ static __s32 camera_detect_ov7670(__u32 list_index, struct i2c_adapter *i2c_adap
             return -ENODEV;
         }
     }
-    
+
     list_print("detect ov7670 success!!\n");
 
     return 0;
@@ -263,7 +263,7 @@ static __s32 camera_detect_ov7670(__u32 list_index, struct i2c_adapter *i2c_adap
 #define __GC2035__
 
 static void camera_pwr_on_gc2035(__u32 list_index, __camera_info_t *camera_info)
-{    
+{
 
 		camera_gpio_set_status(camera_info->stby_pin, 1);
 		camera_gpio_set_status(camera_info->reset_pin, 1);
@@ -278,7 +278,7 @@ static void camera_pwr_on_gc2035(__u32 list_index, __camera_info_t *camera_info)
 		mdelay(10);
 
 
-		if(camera_info->dvdd) 
+		if(camera_info->dvdd)
 		{
 		regulator_enable(camera_info->dvdd);
 		mdelay(10);
@@ -290,7 +290,7 @@ static void camera_pwr_on_gc2035(__u32 list_index, __camera_info_t *camera_info)
 		mdelay(10);
 
 		}
-		if(camera_info->iovdd) 
+		if(camera_info->iovdd)
 		{
 		regulator_enable(camera_info->iovdd);
 		mdelay(10);
@@ -308,11 +308,11 @@ static void camera_pwr_on_gc2035(__u32 list_index, __camera_info_t *camera_info)
 		mdelay(10);
 
 		camera_gpio_write(camera_info->reset_pin, camera_list[list_index].CSI_RST_OFF);
-		mdelay(10);    
+		mdelay(10);
 }
 
 static void camera_pwr_off_gc2035(__u32 list_index, __camera_info_t *camera_info)
-{    
+{
 
 	camera_gpio_write(camera_info->stby_pin, camera_list[list_index].CSI_STBY_ON);
     mdelay(10);
@@ -365,9 +365,9 @@ static __s32 camera_detect_gc2035(__u32 list_index, struct i2c_adapter *i2c_adap
 	}
     	if(value[0] !=0x35)
 		return -ENODEV;
-	
+
 	list_print("detect gc2035 success!!\n");
-    
+
     return 0;
 }
 
@@ -375,10 +375,10 @@ static __s32 camera_detect_gc2035(__u32 list_index, struct i2c_adapter *i2c_adap
 #define __GC0308__
 
 static void camera_pwr_on_gc0308(__u32 list_index, __camera_info_t *camera_info)
-{    
+{
     camera_gpio_set_status(camera_info->stby_pin, 1);
     camera_gpio_set_status(camera_info->reset_pin, 1);
-    
+
     //power supply
     camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_ON);
     if(camera_info->dvdd) {
@@ -390,13 +390,13 @@ static void camera_pwr_on_gc0308(__u32 list_index, __camera_info_t *camera_info)
 	if(camera_info->iovdd) {
 		regulator_enable(camera_info->iovdd);
 	}
-    
+
     mdelay(10);
-    
+
     //standby off io
-    camera_gpio_write(camera_info->stby_pin, camera_list[list_index].CSI_STBY_OFF); 
+    camera_gpio_write(camera_info->stby_pin, camera_list[list_index].CSI_STBY_OFF);
     mdelay(10);
-    
+
     clk_enable(camera_info->module_clk);
     mdelay(10);
 
@@ -404,11 +404,11 @@ static void camera_pwr_on_gc0308(__u32 list_index, __camera_info_t *camera_info)
     mdelay(30);
 
     camera_gpio_write(camera_info->reset_pin, camera_list[list_index].CSI_RST_OFF);
-	mdelay(10);    
+	mdelay(10);
 }
 
 static void camera_pwr_off_gc0308(__u32 list_index, __camera_info_t *camera_info)
-{    
+{
     //reset on io
     camera_gpio_write(camera_info->reset_pin, camera_list[list_index].CSI_RST_ON);
     mdelay(10);
@@ -450,25 +450,25 @@ static __s32 camera_detect_gc0308(__u32 list_index, struct i2c_adapter *i2c_adap
 	if (ret < 0) {
 		return ret;
 	}
-    	
+
 	reg_num[0] = 0x00;
 	ret = camera_i2c_read(i2c_adap, reg_num, value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-    
+
 	if(value[0] != 0x9b)
 		return -ENODEV;
-	
+
 	list_print("detect gc0308 success!!\n");
-    
+
     return 0;
 }
 
 #define __GT2005__
 
 static void camera_pwr_on_gt2005(__u32 list_index, __camera_info_t *camera_info)
-{    
+{
     //power on reset
 	camera_gpio_set_status(camera_info->stby_pin, 1);//set the gpio to output
 	camera_gpio_set_status(camera_info->reset_pin, 1);//set the gpio to output
@@ -507,7 +507,7 @@ static void camera_pwr_on_gt2005(__u32 list_index, __camera_info_t *camera_info)
 }
 
 static void camera_pwr_off_gt2005(__u32 list_index, __camera_info_t *camera_info)
-{   
+{
     //standby and reset io
 	camera_gpio_write(camera_info->stby_pin, camera_list[list_index].CSI_STBY_ON);
 	mdelay(10);
@@ -524,7 +524,7 @@ static void camera_pwr_off_gt2005(__u32 list_index, __camera_info_t *camera_info
 	}
 	if(camera_info->dvdd) {
 		regulator_disable(camera_info->dvdd);
-		mdelay(10);	
+		mdelay(10);
 	}
 	camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_OFF);
 	mdelay(10);
@@ -544,20 +544,20 @@ static __s32 camera_detect_gt2005(__u32 list_index, struct i2c_adapter *i2c_adap
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
 
     list_print("try to detect gt2005 ... \n");
-    
+
 	regs.reg_num[0] = 0x00;
 	regs.reg_num[1] = 0x00;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-    
+
 	if(regs.value[0] != 0x51)
 		return -ENODEV;
-    
+
     list_print("detect gt2005 success!!\n");
-    
-	return 0;           
+
+	return 0;
 }
 
 #define __HI704__
@@ -619,7 +619,7 @@ static void camera_pwr_off_hi704(__u32 list_index, __camera_info_t *camera_info)
 	}
 	if(camera_info->dvdd) {
 		regulator_disable(camera_info->dvdd);
-		mdelay(10);	
+		mdelay(10);
 	}
 	camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_OFF);
 	mdelay(10);
@@ -639,14 +639,14 @@ static __s32 camera_detect_hi704(__u32 list_index, struct i2c_adapter *i2c_adap)
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
 
     list_print("try to detect hi704 ... \n");
-    
+
 	regs.reg_num[0] = 0x03;
 	regs.value[0] = 0x00; //PAGE 0x00
 	ret = camera_i2c_write(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-	
+
 	regs.reg_num[0] = 0x04;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
@@ -655,10 +655,10 @@ static __s32 camera_detect_hi704(__u32 list_index, struct i2c_adapter *i2c_adap)
 
 	if(regs.value[0] != 0x96)
 		return -ENODEV;
-    
+
     list_print("detect hi704 success!!\n");
-    
-	return 0;    
+
+	return 0;
 }
 
 #define __SP0838__
@@ -719,7 +719,7 @@ static void camera_pwr_off_sp0838(__u32 list_index, __camera_info_t *camera_info
 	}
 	if(camera_info->dvdd) {
 		regulator_disable(camera_info->dvdd);
-		mdelay(10);	
+		mdelay(10);
 	}
 	camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_OFF);
 	mdelay(10);
@@ -733,20 +733,20 @@ static void camera_pwr_off_sp0838(__u32 list_index, __camera_info_t *camera_info
 static __s32 camera_detect_sp0838(__u32 list_index, struct i2c_adapter *i2c_adap)
 {
     int ret;
-	struct regval_list regs;    
+	struct regval_list regs;
     __u32 i2c_addr  = camera_list[list_index].i2c_addr;
     __u32 addr_step = camera_list[list_index].REG_ADDR_STEP;
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
 
     list_print("try to detect sp0838 ... \n");
-    
+
 	regs.reg_num[0] = 0xfd;
 	regs.value[0] = 0x00; //PAGE 0x00
 	ret = camera_i2c_write(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-	
+
 	regs.reg_num[0] = 0x02;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
@@ -755,9 +755,9 @@ static __s32 camera_detect_sp0838(__u32 list_index, struct i2c_adapter *i2c_adap
 
 	if(regs.value[0] != 0x27)
 		return -ENODEV;
-    
+
     list_print("detect sp0838 success!!\n");
-    
+
 	return 0;
 }
 
@@ -799,7 +799,7 @@ static void camera_pwr_on_mt9m112(__u32 list_index, __camera_info_t *camera_info
 	camera_gpio_write(camera_info->reset_pin, camera_list[list_index].CSI_RST_ON);
 	mdelay(100);
 	camera_gpio_write(camera_info->reset_pin, camera_list[list_index].CSI_RST_OFF);
-	mdelay(100);    
+	mdelay(100);
 }
 
 static void camera_pwr_off_mt9m112(__u32 list_index, __camera_info_t *camera_info)
@@ -820,7 +820,7 @@ static void camera_pwr_off_mt9m112(__u32 list_index, __camera_info_t *camera_inf
 	}
 	if(camera_info->dvdd) {
 		regulator_disable(camera_info->dvdd);
-		mdelay(10);	
+		mdelay(10);
 	}
 	camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_OFF);
 	mdelay(10);
@@ -828,7 +828,7 @@ static void camera_pwr_off_mt9m112(__u32 list_index, __camera_info_t *camera_inf
 	clk_disable(camera_info->module_clk);
 	//set the io to hi-z
 	camera_gpio_set_status(camera_info->reset_pin, 0);//set the gpio to input
-	//camera_gpio_set_status(camera_info->stby_pin, 0);//set the gpio to input        
+	//camera_gpio_set_status(camera_info->stby_pin, 0);//set the gpio to input
 }
 
 static __s32 camera_detect_mt9m112(__u32 list_index, struct i2c_adapter *i2c_adap)
@@ -838,9 +838,9 @@ static __s32 camera_detect_mt9m112(__u32 list_index, struct i2c_adapter *i2c_ada
     __u32 i2c_addr  = camera_list[list_index].i2c_addr;
     __u32 addr_step = camera_list[list_index].REG_ADDR_STEP;
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
-    
+
     list_print("try to detect mt9m112 ... \n");
-    
+
 	regs.reg_num[0] = 0xfe;
 	regs.value[0] = 0x00; //PAGE 0x00
 	regs.value[1] = 0x00;
@@ -848,7 +848,7 @@ static __s32 camera_detect_mt9m112(__u32 list_index, struct i2c_adapter *i2c_ada
 	if (ret < 0) {
 		return ret;
 	}
-	
+
 	regs.reg_num[0] = 0x00;
 	regs.reg_num[1] = 0x00;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
@@ -860,7 +860,7 @@ static __s32 camera_detect_mt9m112(__u32 list_index, struct i2c_adapter *i2c_ada
 		return -ENODEV;
 
     list_print("detect mt9m112 success!!\n");
-    
+
 	return 0;
 }
 
@@ -902,7 +902,7 @@ static void camera_pwr_on_mt9m113(__u32 list_index, __camera_info_t *camera_info
     camera_gpio_write(camera_info->reset_pin, camera_list[list_index].CSI_RST_ON);
     mdelay(100);
     camera_gpio_write(camera_info->reset_pin, camera_list[list_index].CSI_RST_OFF);
-    mdelay(100);   
+    mdelay(100);
 }
 
 static void camera_pwr_off_mt9m113(__u32 list_index, __camera_info_t *camera_info)
@@ -923,7 +923,7 @@ static void camera_pwr_off_mt9m113(__u32 list_index, __camera_info_t *camera_inf
     }
     if(camera_info->dvdd) {
     	regulator_disable(camera_info->dvdd);
-    	mdelay(10);	
+    	mdelay(10);
     }
     camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_OFF);
     mdelay(10);
@@ -931,7 +931,7 @@ static void camera_pwr_off_mt9m113(__u32 list_index, __camera_info_t *camera_inf
     clk_disable(camera_info->module_clk);
     //set the io to hi-z
     camera_gpio_set_status(camera_info->reset_pin, 0);//set the gpio to input
-    //camera_gpio_set_status(camera_info->stby_pin, 0);//set the gpio to input   
+    //camera_gpio_set_status(camera_info->stby_pin, 0);//set the gpio to input
 }
 
 static __s32 camera_detect_mt9m113(__u32 list_index, struct i2c_adapter *i2c_adap)
@@ -953,10 +953,10 @@ static __s32 camera_detect_mt9m113(__u32 list_index, struct i2c_adapter *i2c_ada
 
     if(regs.value[0] != 0x24)
     	return -ENODEV;
-    
+
     list_print("detect mt9m113 success!!\n");
-    
-    return 0;   
+
+    return 0;
 }
 
 #define __OV2655__
@@ -1018,7 +1018,7 @@ static void camera_pwr_off_ov2655(__u32 list_index, __camera_info_t *camera_info
     }
     if(camera_info->dvdd) {
     	regulator_disable(camera_info->dvdd);
-    	mdelay(10);	
+    	mdelay(10);
     }
     camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_OFF);
     mdelay(10);
@@ -1026,7 +1026,7 @@ static void camera_pwr_off_ov2655(__u32 list_index, __camera_info_t *camera_info
     clk_disable(camera_info->module_clk);
     //set the io to hi-z
     camera_gpio_set_status(camera_info->reset_pin, 0);//set the gpio to input
-    //camera_gpio_set_status(camera_info->stby_pin, 0);//set the gpio to input    
+    //camera_gpio_set_status(camera_info->stby_pin, 0);//set the gpio to input
 }
 
 static __s32 camera_detect_ov2655(__u32 list_index, struct i2c_adapter *i2c_adap)
@@ -1038,7 +1038,7 @@ static __s32 camera_detect_ov2655(__u32 list_index, struct i2c_adapter *i2c_adap
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
 
     list_print("try to detect ov2655 ... \n");
-    
+
 	regs.reg_num[0] = 0x30;
 	regs.reg_num[1] = 0x0A;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
@@ -1048,7 +1048,7 @@ static __s32 camera_detect_ov2655(__u32 list_index, struct i2c_adapter *i2c_adap
 
 	if(regs.value[0] != 0x26)
 		return -ENODEV;
-	
+
 	regs.reg_num[0] = 0x30;
 	regs.reg_num[1] = 0x0B;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
@@ -1058,9 +1058,9 @@ static __s32 camera_detect_ov2655(__u32 list_index, struct i2c_adapter *i2c_adap
 
 	if(regs.value[0] != 0x56)
 		return -ENODEV;
-    
+
     list_print("detect ov2655 success!!\n");
-    
+
 	return 0;
 }
 
@@ -1123,7 +1123,7 @@ static void camera_pwr_off_hi253(__u32 list_index, __camera_info_t *camera_info)
 	}
 	if(camera_info->dvdd) {
 		regulator_disable(camera_info->dvdd);
-		mdelay(10);	
+		mdelay(10);
 	}
 	camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_OFF);
 	mdelay(10);
@@ -1143,14 +1143,14 @@ static __s32 camera_detect_hi253(__u32 list_index, struct i2c_adapter *i2c_adap)
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
 
     list_print("try to detect hi253 ... \n");
-    
+
 	regs.reg_num[0] = 0x03;
 	regs.value[0] = 0x00; //PAGE 0x00
 	ret = camera_i2c_write(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-	
+
 	regs.reg_num[0] = 0x04;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
@@ -1159,16 +1159,16 @@ static __s32 camera_detect_hi253(__u32 list_index, struct i2c_adapter *i2c_adap)
 
 	if(regs.value[0] != 0x92)
 		return -ENODEV;
-    
+
     list_print("detect hi253 success!!\n");
-    
-	return 0;    
+
+	return 0;
 }
 
 #define __GC0307__
 
 static void camera_pwr_on_gc0307(__u32 list_index, __camera_info_t *camera_info)
-{   
+{
     //power on reset
 	camera_gpio_set_status(camera_info->stby_pin, 1);//set the gpio to output
 	camera_gpio_set_status(camera_info->reset_pin, 1);//set the gpio to output
@@ -1224,7 +1224,7 @@ static void camera_pwr_off_gc0307(__u32 list_index, __camera_info_t *camera_info
 	}
 	if(camera_info->dvdd) {
 		regulator_disable(camera_info->dvdd);
-		mdelay(10);	
+		mdelay(10);
 	}
 	camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_OFF);
 	mdelay(10);
@@ -1232,7 +1232,7 @@ static void camera_pwr_off_gc0307(__u32 list_index, __camera_info_t *camera_info
 	clk_disable(camera_info->module_clk);
 	//set the io to hi-z
 	camera_gpio_set_status(camera_info->reset_pin, 0);//set the gpio to input
-	//camera_gpio_set_status(camera_info->stby_pin, 0);//set the gpio to input    
+	//camera_gpio_set_status(camera_info->stby_pin, 0);//set the gpio to input
 }
 
 static __s32 camera_detect_gc0307(__u32 list_index, struct i2c_adapter *i2c_adap)
@@ -1244,25 +1244,25 @@ static __s32 camera_detect_gc0307(__u32 list_index, struct i2c_adapter *i2c_adap
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
 
     list_print("try to detect gc0307 ... \n");
-    
+
 	reg_num[0] = 0xfe;
 	value[0] = 0x00; //PAGE 0x00
 	ret = camera_i2c_write(i2c_adap, reg_num, value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-	
+
 	reg_num[0] = 0x00;
 	ret = camera_i2c_read(i2c_adap, reg_num, value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-	
+
 	if(value[0] != 0x99)
 		return -ENODEV;
-	
+
 	list_print("detect gc0307 success!!\n");
-    
+
     return 0;
 }
 
@@ -1325,7 +1325,7 @@ static void camera_pwr_off_mt9d112(__u32 list_index, __camera_info_t *camera_inf
 	}
 	if(camera_info->dvdd) {
 		regulator_disable(camera_info->dvdd);
-		mdelay(10);	
+		mdelay(10);
 	}
 	camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_OFF);
 	mdelay(10);
@@ -1333,7 +1333,7 @@ static void camera_pwr_off_mt9d112(__u32 list_index, __camera_info_t *camera_inf
 	clk_disable(camera_info->module_clk);
 	//set the io to hi-z
 	camera_gpio_set_status(camera_info->reset_pin,0);//set the gpio to input
-	//camera_gpio_set_status(camera_info->stby_pin,0);//set the gpio to input    
+	//camera_gpio_set_status(camera_info->stby_pin,0);//set the gpio to input
 }
 
 static __s32 camera_detect_mt9d112(__u32 list_index, struct i2c_adapter *i2c_adap)
@@ -1345,10 +1345,10 @@ static __s32 camera_detect_mt9d112(__u32 list_index, struct i2c_adapter *i2c_ada
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
 
     list_print("try to detect mt9d112 ... \n");
-    
-	regs.value[0] = 0x00; 
+
+	regs.value[0] = 0x00;
 	regs.value[1] = 0x00;
-	
+
 	regs.reg_num[0] = 0x30;
 	regs.reg_num[1] = 0x00;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
@@ -1360,8 +1360,8 @@ static __s32 camera_detect_mt9d112(__u32 list_index, struct i2c_adapter *i2c_ada
 		return -ENODEV;
 
     list_print("detect mt9d112 success!!\n");
-    
-	return 0;    
+
+	return 0;
 }
 
 #define __OV5640__
@@ -1369,7 +1369,7 @@ static __s32 camera_detect_mt9d112(__u32 list_index, struct i2c_adapter *i2c_ada
 static void camera_pwr_on_ov5640(__u32 list_index, __camera_info_t *camera_info)
 {
     __u32 CSI_AF_PWR_ON = 1;
-    
+
     //power on reset
     camera_gpio_set_status(camera_info->stby_pin,1);//set the gpio to output
     camera_gpio_set_status(camera_info->reset_pin,1);//set the gpio to output
@@ -1391,10 +1391,10 @@ static void camera_pwr_on_ov5640(__u32 list_index, __camera_info_t *camera_info)
     if(camera_info->avdd) {
         regulator_enable(camera_info->avdd);
     }
-    
+
     camera_gpio_write(camera_info->af_pwr_pin, CSI_AF_PWR_ON);
     mdelay(10);
-    
+
     //standby off io
     camera_gpio_write(camera_info->stby_pin, camera_list[list_index].CSI_STBY_OFF);
     mdelay(10);
@@ -1406,14 +1406,14 @@ static void camera_pwr_on_ov5640(__u32 list_index, __camera_info_t *camera_info)
 static void camera_pwr_off_ov5640(__u32 list_index, __camera_info_t *camera_info)
 {
     __u32 CSI_AF_PWR_OFF = 0;
-    
+
     //inactive mclk before power off
 	clk_disable(camera_info->module_clk);
 	//power supply off
 	camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_OFF);
-    
+
 	camera_gpio_write(camera_info->af_pwr_pin, CSI_AF_PWR_OFF);
-    
+
 	if(camera_info->dvdd) {
 		regulator_disable(camera_info->dvdd);
 	}
@@ -1423,7 +1423,7 @@ static void camera_pwr_off_ov5640(__u32 list_index, __camera_info_t *camera_info
 	if(camera_info->iovdd) {
 		regulator_disable(camera_info->iovdd);
 	}
-    
+
 	//standby and reset io
 	mdelay(10);
 	camera_gpio_write(camera_info->stby_pin, camera_list[list_index].CSI_STBY_OFF);
@@ -1441,9 +1441,9 @@ static __s32 camera_detect_ov5640(__u32 list_index, struct i2c_adapter *i2c_adap
     __u32 i2c_addr  = camera_list[list_index].i2c_addr;
     __u32 addr_step = camera_list[list_index].REG_ADDR_STEP;
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
-    
+
     list_print("try to detect ov5640 ... \n");
-    
+
     regs.reg_num[0] = 0x30;
 	regs.reg_num[1] = 0x0a;
     ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
@@ -1454,18 +1454,18 @@ static __s32 camera_detect_ov5640(__u32 list_index, struct i2c_adapter *i2c_adap
     if (regs.value[0] != 0x56) {
         return -ENODEV;
     }
-    
+
     regs.reg_num[0] = 0x30;
 	regs.reg_num[1] = 0x0b;
     ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-    
+
     if (regs.value[0] != 0x40) {
         return -ENODEV;
     }
-    
+
     list_print("detect ov5640 success!!\n");
 
     return 0;
@@ -1530,7 +1530,7 @@ static void camera_pwr_off_gc2015(__u32 list_index, __camera_info_t *camera_info
 	}
 	if(camera_info->dvdd) {
 		regulator_disable(camera_info->dvdd);
-		mdelay(10);	
+		mdelay(10);
 	}
 	camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_OFF);
 	mdelay(10);
@@ -1550,38 +1550,38 @@ static __s32 camera_detect_gc2015(__u32 list_index, struct i2c_adapter *i2c_adap
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
 
     list_print("try to detect gc2015 ... \n");
-    
+
 	regs.reg_num[0] = 0xfe;
 	regs.value[0]   = 0x80;           //for GC2015 SOFT reset!  2012-3-15
 	ret = camera_i2c_write(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
-	
+
 	regs.reg_num[0] = 0xfe;
 	regs.value[0] = 0x00; //PAGE 0x00
 	ret = camera_i2c_write(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-	
+
 	regs.reg_num[0] = 0x00;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-	
+
 	if(regs.value[0] != 0x20)
 		return -ENODEV;
-	
+
 	regs.reg_num[0] = 0x01;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-	
+
 	if(regs.value[0] != 0x05)
 		return -ENODEV;
-    
+
     list_print("detect gc2015 success!!\n");
-    
+
 	return 0;
 }
 
@@ -1623,7 +1623,7 @@ static void camera_pwr_on_ov2643(__u32 list_index, __camera_info_t *camera_info)
 	camera_gpio_write(camera_info->reset_pin, camera_list[list_index].CSI_RST_ON);
 	mdelay(100);
 	camera_gpio_write(camera_info->reset_pin, camera_list[list_index].CSI_RST_OFF);
-	mdelay(100);    
+	mdelay(100);
 }
 
 static void camera_pwr_off_ov2643(__u32 list_index, __camera_info_t *camera_info)
@@ -1644,7 +1644,7 @@ static void camera_pwr_off_ov2643(__u32 list_index, __camera_info_t *camera_info
 	}
 	if(camera_info->dvdd) {
 		regulator_disable(camera_info->dvdd);
-		mdelay(10);	
+		mdelay(10);
 	}
 	camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_OFF);
 	mdelay(10);
@@ -1652,7 +1652,7 @@ static void camera_pwr_off_ov2643(__u32 list_index, __camera_info_t *camera_info
 	clk_disable(camera_info->module_clk);
 	//set the io to hi-z
 	camera_gpio_set_status(camera_info->reset_pin, 0);//set the gpio to input
-	//camera_gpio_set_status(camera_info->stby_pin, 0);//set the gpio to input    
+	//camera_gpio_set_status(camera_info->stby_pin, 0);//set the gpio to input
 }
 
 static __s32 camera_detect_ov2643(__u32 list_index, struct i2c_adapter *i2c_adap)
@@ -1664,29 +1664,29 @@ static __s32 camera_detect_ov2643(__u32 list_index, struct i2c_adapter *i2c_adap
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
 
     list_print("try to detect ov2643 ... \n");
-    
+
 	regs.reg_num[0] = 0x0a;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-	
+
 	if(regs.value[0] != 0x26) {
 		return -ENODEV;
 	}
-	
+
 	regs.reg_num[0] = 0x0b;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-	
+
 	if(regs.value[0] != 0x43) {
 		return -ENODEV;
 	}
-    
+
     list_print("detect ov2643 success!!\n");
-    
+
 	return 0;
 }
 
@@ -1751,7 +1751,7 @@ static void camera_pwr_off_gc0329(__u32 list_index, __camera_info_t *camera_info
 	}
 	if(camera_info->dvdd) {
 		regulator_disable(camera_info->dvdd);
-		mdelay(10);	
+		mdelay(10);
 	}
 	camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_OFF);
 	mdelay(10);
@@ -1759,7 +1759,7 @@ static void camera_pwr_off_gc0329(__u32 list_index, __camera_info_t *camera_info
 	clk_disable(camera_info->module_clk);
 	//set the io to hi-z
 	camera_gpio_set_status(camera_info->reset_pin,0);//set the gpio to input
-	//camera_gpio_set_status(camera_info->stby_pin,0);//set the gpio to input    
+	//camera_gpio_set_status(camera_info->stby_pin,0);//set the gpio to input
 }
 
 static __s32 camera_detect_gc0329(__u32 list_index, struct i2c_adapter *i2c_adap)
@@ -1771,14 +1771,14 @@ static __s32 camera_detect_gc0329(__u32 list_index, struct i2c_adapter *i2c_adap
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
 
     list_print("try to detect gc0329 ... \n");
-	
+
 	regs.reg_num[0] = 0xfc;
 	regs.value[0] = 0x16; //enable digital clock
 	ret = camera_i2c_write(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-	
+
 	regs.reg_num[0] = 0x00;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
@@ -1787,9 +1787,9 @@ static __s32 camera_detect_gc0329(__u32 list_index, struct i2c_adapter *i2c_adap
 
 	if(regs.value[0] != 0xc0)
 		return -ENODEV;
-    
+
     list_print("detect gc0329 success!!\n");
-    
+
 	return 0;
 }
 
@@ -1831,7 +1831,7 @@ static void camera_pwr_on_gc0309(__u32 list_index, __camera_info_t *camera_info)
 	camera_gpio_write(camera_info->reset_pin, camera_list[list_index].CSI_RST_ON);
 	mdelay(100);
 	camera_gpio_write(camera_info->reset_pin, camera_list[list_index].CSI_RST_OFF);
-	mdelay(100);    
+	mdelay(100);
 }
 
 static void camera_pwr_off_gc0309(__u32 list_index, __camera_info_t *camera_info)
@@ -1852,7 +1852,7 @@ static void camera_pwr_off_gc0309(__u32 list_index, __camera_info_t *camera_info
 	}
 	if(camera_info->dvdd) {
 		regulator_disable(camera_info->dvdd);
-		mdelay(10);	
+		mdelay(10);
 	}
 	camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_OFF);
 	mdelay(10);
@@ -1870,23 +1870,23 @@ static __s32 camera_detect_gc0309(__u32 list_index, struct i2c_adapter *i2c_adap
     __u32 i2c_addr  = camera_list[list_index].i2c_addr;
     __u32 addr_step = camera_list[list_index].REG_ADDR_STEP;
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
-	
+
 	regs.reg_num[0] = 0xfe;
 	regs.value[0] = 0x00; //PAGE 0x00
 	ret = camera_i2c_write(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-	
+
 	regs.reg_num[0] = 0x00;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-	
+
 	if(regs.value[0] != 0xa0)
 		return -ENODEV;
-	
+
 	return 0;
 }
 
@@ -1940,12 +1940,12 @@ static void camera_pwr_off_tvp5150(__u32 list_index, __camera_info_t *camera_inf
     if(camera_info->iovdd) {
         regulator_disable(camera_info->iovdd);
     }
-    
+
     //standby and reset io
     mdelay(10);
     camera_gpio_write(camera_info->stby_pin, camera_list[list_index].CSI_STBY_OFF);
     camera_gpio_write(camera_info->reset_pin, camera_list[list_index].CSI_RST_ON);
-    
+
 }
 
 static __s32 camera_detect_tvp5150(__u32 list_index, struct i2c_adapter *i2c_adap)
@@ -1957,28 +1957,28 @@ static __s32 camera_detect_tvp5150(__u32 list_index, struct i2c_adapter *i2c_ada
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
 
     list_print("try to detect tvp5150 ... \n");
-	
+
 	regs.reg_num[0] = 0x80;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-	
+
 	if(regs.value[0] != 0x51)
 		return -ENODEV;
-	
+
 	regs.reg_num[0] = 0x81;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-	
+
 	if(regs.value[0] != 0x50)
 		return -ENODEV;
 
     list_print("detect tvp5150 success!!\n");
-	
-	return 0;        
+
+	return 0;
 }
 
 #define __S5K4EC__
@@ -1986,7 +1986,7 @@ static __s32 camera_detect_tvp5150(__u32 list_index, struct i2c_adapter *i2c_ada
 static void camera_pwr_on_s5k4ec(__u32 list_index, __camera_info_t *camera_info)
 {
     __u32 CSI_AF_PWR_ON = 0;
-    
+
     camera_gpio_set_status(camera_info->stby_pin,1);//set the gpio to output
 	camera_gpio_set_status(camera_info->reset_pin,1);//set the gpio to output
 	//power supply
@@ -2000,7 +2000,7 @@ static void camera_pwr_on_s5k4ec(__u32 list_index, __camera_info_t *camera_info)
 	if(camera_info->avdd) {
 		regulator_enable(camera_info->avdd);
 	}
-    
+
 	camera_gpio_write(camera_info->af_pwr_pin, CSI_AF_PWR_ON);
 	mdelay(10);
 	//active mclk power on reset
@@ -2017,7 +2017,7 @@ static void camera_pwr_on_s5k4ec(__u32 list_index, __camera_info_t *camera_info)
 static void camera_pwr_off_s5k4ec(__u32 list_index, __camera_info_t *camera_info)
 {
     __u32 CSI_AF_PWR_OFF = 1;
-    
+
     //reset on
 	camera_gpio_write(camera_info->reset_pin, camera_list[list_index].CSI_RST_ON);
 	udelay(100);
@@ -2025,11 +2025,11 @@ static void camera_pwr_off_s5k4ec(__u32 list_index, __camera_info_t *camera_info
 	clk_disable(camera_info->module_clk);
 	udelay(10);
 	//standy on
-	camera_gpio_write(camera_info->stby_pin, camera_list[list_index].CSI_STBY_ON);	
-    
+	camera_gpio_write(camera_info->stby_pin, camera_list[list_index].CSI_STBY_ON);
+
 	//power supply off
 	camera_gpio_write(camera_info->af_pwr_pin, CSI_AF_PWR_OFF);
-    
+
 	if(camera_info->dvdd) {
 		regulator_disable(camera_info->dvdd);
 	}
@@ -2052,9 +2052,9 @@ static __s32 camera_detect_s5k4ec(__u32 list_index, struct i2c_adapter *i2c_adap
     __u32 i2c_addr  = camera_list[list_index].i2c_addr;
     __u32 addr_step = camera_list[list_index].REG_ADDR_STEP;
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
-    
+
     list_print("try to detect s5k4ec ... \n");
-    
+
     regs.reg_num[0] = 0x00;
 	regs.reg_num[1] = 0x2c;
 	regs.value[0] = 0x70;
@@ -2079,13 +2079,13 @@ static __s32 camera_detect_s5k4ec(__u32 list_index, struct i2c_adapter *i2c_adap
 	if (ret < 0) {
 		return ret;
 	}
-    
+
     if ((regs.value[0] != 0x4e) || (regs.value[1] != 0xc0)) {
-        return -ENODEV;    
+        return -ENODEV;
     }
-    
+
     list_print("detect s5k4ec success!!\n");
-    
+
     return 0;
 }
 
@@ -2148,7 +2148,7 @@ static void camera_pwr_off_ov5650_mv9335(__u32 list_index, __camera_info_t *came
     //}
     //if(camera_info->dvdd) {
     //	regulator_disable(camera_info->dvdd);
-    //	mdelay(10);	
+    //	mdelay(10);
     //}
 	//inactive mclk before power off
 	clk_disable(camera_info->module_clk);
@@ -2156,7 +2156,7 @@ static void camera_pwr_off_ov5650_mv9335(__u32 list_index, __camera_info_t *came
 	camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_OFF);
 	//set the io to hi-z
 	camera_gpio_set_status(camera_info->reset_pin,0);//set the gpio to input
-	//camera_gpio_set_status(camera_info->stby_pin,0);//set the gpio to input    
+	//camera_gpio_set_status(camera_info->stby_pin,0);//set the gpio to input
 }
 
 static __s32 camera_detect_ov5650_mv9335(__u32 list_index, struct i2c_adapter *i2c_adap)
@@ -2169,7 +2169,7 @@ static __s32 camera_detect_ov5650_mv9335(__u32 list_index, struct i2c_adapter *i
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
 
     list_print("try to detect ov5650_mv9335 ... \n");
-    
+
 	regs.value[0] = 0xff;
 	regs.reg_num[0] = 0x00;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
@@ -2177,21 +2177,21 @@ static __s32 camera_detect_ov5650_mv9335(__u32 list_index, struct i2c_adapter *i
 		return ret;
 	}
 	c0=regs.value[0];
-	
+
 	regs.reg_num[0] = 0x01;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
 	c1=regs.value[0];
-	
+
 	if(c0 != 0x93 || c1 != 0x35) {
 		return -ENODEV;
 	}
-    
+
     list_print("detect ov5650_mv9335 success!!\n");
-    
-	return 0;    
+
+	return 0;
 }
 
 #define __SIV121D__
@@ -2207,10 +2207,10 @@ static void camera_pwr_on_siv121d(__u32 list_index, __camera_info_t *camera_info
 	camera_gpio_write(camera_info->reset_pin, camera_list[list_index].CSI_RST_ON);
 
     msleep(1);
-    clk_enable(camera_info->module_clk);    
+    clk_enable(camera_info->module_clk);
     msleep(10);
     camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_ON);
-    
+
     if(camera_info->dvdd) {
 		regulator_enable(camera_info->dvdd);
 		mdelay(10);
@@ -2223,7 +2223,7 @@ static void camera_pwr_on_siv121d(__u32 list_index, __camera_info_t *camera_info
 		regulator_enable(camera_info->iovdd);
 		mdelay(10);
 	}
-    
+
     //reset after power on
 	camera_gpio_write(camera_info->reset_pin, camera_list[list_index].CSI_RST_OFF);
 	mdelay(10);
@@ -2248,14 +2248,14 @@ static void camera_pwr_off_siv121d(__u32 list_index, __camera_info_t *camera_inf
 	}
 	if(camera_info->dvdd) {
 		regulator_disable(camera_info->dvdd);
-		msleep(10);	
+		msleep(10);
 	}
 	camera_gpio_write(camera_info->pwr_pin, camera_list[list_index].CSI_PWR_OFF);
 	msleep(10);
-	
+
 	//inactive mclk after power off
 	clk_disable(camera_info->module_clk);
-	
+
 	//set the io to hi-z
 	camera_gpio_set_status(camera_info->reset_pin,0);//set the gpio to output
 	//camera_gpio_set_status(camera_info->stby_pin,0);//set the gpio to output
@@ -2268,16 +2268,16 @@ static __s32 camera_detect_siv121d(__u32 list_index, struct i2c_adapter *i2c_ada
     __u32 i2c_addr  = camera_list[list_index].i2c_addr;
     __u32 addr_step = camera_list[list_index].REG_ADDR_STEP;
     __u32 data_step = camera_list[list_index].REG_DATA_STEP;
-    
+
     list_print("try to detect siv121d ... \n");
-    
+
     regs.reg_num[0] = 0x00;
 	regs.value[0] = 0x00; //PAGE 0x00
 	ret = camera_i2c_write(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
 		return ret;
 	}
-	
+
 	regs.reg_num[0] = 0x01;
 	ret = camera_i2c_read(i2c_adap, regs.reg_num, regs.value, i2c_addr, addr_step, data_step);
 	if (ret < 0) {
@@ -2295,7 +2295,7 @@ static __s32 camera_detect_siv121d(__u32 list_index, struct i2c_adapter *i2c_ada
 __camera_list_t camera_list[MAX_CAMERA_LIST_ITEM] = {
     CAMERA_LIST_ITEM_INIT(ov7670,        1, 1, 0x42, 1, 0, 0, 1, 1, 0),
     CAMERA_LIST_ITEM_INIT(gc2035,        1, 1, 0x78, 1, 0, 0, 1, 1, 0),
-    CAMERA_LIST_ITEM_INIT(gc0308,        1, 1, 0x42, 1, 0, 0, 1, 1, 0), 
+    CAMERA_LIST_ITEM_INIT(gc0308,        1, 1, 0x42, 1, 0, 0, 1, 1, 0),
     CAMERA_LIST_ITEM_INIT(gt2005,        2, 1, 0x78, 0, 1, 0, 1, 1, 0),
     CAMERA_LIST_ITEM_INIT(hi704,         1, 1, 0x60, 1, 0, 0, 1, 1, 0),
     CAMERA_LIST_ITEM_INIT(sp0838,        1, 1, 0x30, 1, 0, 0, 1, 1, 0),

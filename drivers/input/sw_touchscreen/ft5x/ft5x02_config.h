@@ -1,5 +1,5 @@
-#ifndef __FT5X02_CONFIG_H__ 
-#define __FT5X02_CONFIG_H__ 
+#ifndef __FT5X02_CONFIG_H__
+#define __FT5X02_CONFIG_H__
 /*FT5X02 config*/
 
 
