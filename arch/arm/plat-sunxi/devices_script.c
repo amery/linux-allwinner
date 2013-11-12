@@ -15,13 +15,101 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#define DEBUG
 #define pr_fmt(fmt)	"sunxi:sys_config: " fmt
 
 #include <linux/kernel.h>
+#include <linux/slab.h>
 #include <linux/string.h>
+#include <linux/platform_device.h>
 
 #include <plat/script.h>
+
+#define SUNXI_DEVICE_NAME_LEN	32
+
+struct sunxi_device {
+	char name[SUNXI_DEVICE_NAME_LEN];
+	const struct sunxi_section *config;
+
+	struct platform_device pdev;
+
+	unsigned int num_res;
+	struct resource resource[];
+};
+
+struct sunxi_device *sunxi_device_alloc(size_t num_res, const char *fmt, ...)
+{
+	va_list ap;
+	struct sunxi_device *dev = kzalloc(sizeof(*dev) +
+					   num_res*sizeof(struct resource),
+					   GFP_KERNEL);
+	if (dev) {
+		va_start(ap, fmt);
+		vsnprintf(dev->name, sizeof(dev->name), fmt, ap);
+		va_end(ap);
+
+		dev->pdev.name = dev->name;
+		dev->num_res = num_res;
+	}
+	return dev;
+}
+
+/*
+ * pdev constructors
+ */
+struct pdev_constructor {
+	const char *name;
+	struct sunxi_device *(*f)(const struct sunxi_section *,
+				  const char *, int);
+};
+
+static struct sunxi_device *generic_new(const struct sunxi_section *sp,
+					   const char *feature, int id)
+{
+	struct sunxi_device *dev = sunxi_device_alloc(0, "sunxi-%s", feature);
+	if (dev) {
+		dev->pdev.id = id;
+		dev->config = sp;
+	}
+	return dev;
+}
+
+static struct pdev_constructor constructors[] = {
+	{ .f = generic_new, }, /* fallback */
+};
+
+static void create_pdev(const struct sunxi_section *sp,
+			const char *name, int index)
+{
+	struct sunxi_device *dev;
+	struct pdev_constructor *pc;
+
+	/* search constructor */
+	for (pc = constructors; pc->name && strcmp(pc->name, name) != 0; pc++)
+		;
+
+	dev = pc->f(sp, name, index);
+
+	if (dev) {
+		int ret = platform_device_register(&dev->pdev);
+
+		if (ret) {
+			if (index < 0)
+				pr_info("%s: registration failed: %d\n", dev->pdev.name, ret);
+			else
+				pr_info("%s.%d: registration failed: %d\n", dev->pdev.name, dev->pdev.id,
+					ret);
+
+			kfree(dev);
+			dev = NULL;
+		} else if (index < 0)
+			pr_info("%s: registered\n", dev->pdev.name);
+		else
+			pr_info("%s.%d: registered\n", dev->pdev.name, dev->pdev.id);
+	} else if (index < 0)
+		pr_warning("%s failed to allocate pdev\n", name);
+	else
+		pr_warning("%s.%d failed to allocate pdev\n", name, index);
+}
 
 /*
  * scan script.bin
@@ -88,6 +176,9 @@ static void config_feature(const struct sunxi_section *section,
 		else
 			pr_debug("[%s] -> %s:%d used:%u\n",
 				 section->name, name, index, *used);
+
+		if (*used == 1)
+			create_pdev(section, name, index);
 	} else if (index < 0) {
 		pr_debug("[%s] -> %s assumed unused\n",
 			 section->name, name);
