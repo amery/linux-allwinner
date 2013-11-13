@@ -87,6 +87,9 @@ static void create_pdev(const struct sunxi_section *sp,
 	for (pc = constructors; pc->name && strcmp(pc->name, name) != 0; pc++)
 		;
 
+	if (!pc->f)
+		return; /* skip */
+
 	dev = pc->f(sp, name, index);
 
 	if (dev) {
