@@ -22,6 +22,8 @@
 #include <linux/string.h>
 #include <linux/platform_device.h>
 
+#include <linux/ioport.h>
+
 #include <plat/script.h>
 
 #define SUNXI_DEVICE_NAME_LEN	32
@@ -29,6 +31,7 @@
 struct sunxi_device {
 	char name[SUNXI_DEVICE_NAME_LEN];
 	const struct sunxi_section *config;
+	u32 *pio;
 
 	struct platform_device pdev;
 
@@ -58,6 +61,7 @@ struct sunxi_device *sunxi_device_alloc(size_t num_res, const char *fmt, ...)
  */
 struct pdev_constructor {
 	const char *name;
+	unsigned int manual_pio;
 	struct sunxi_device *(*f)(const struct sunxi_section *,
 				  const char *, int);
 };
@@ -93,25 +97,47 @@ static void create_pdev(const struct sunxi_section *sp,
 	dev = pc->f(sp, name, index);
 
 	if (dev) {
-		int ret = platform_device_register(&dev->pdev);
+		int ret;
 
+		if (pc->manual_pio)
+			; /* driver will do it */
+		else if (sunxi_request_section_gpio(&dev->pio, sp) < 0) {
+			if (index < 0)
+				pr_err("%s: failed to request GPIOs", dev->pdev.name);
+			else
+				pr_err("%s.%d: failed to request GPIOs",
+				       dev->pdev.name, dev->pdev.id);
+			goto free_dev;
+		}
+
+		ret = platform_device_register(&dev->pdev);
 		if (ret) {
 			if (index < 0)
-				pr_info("%s: registration failed: %d\n", dev->pdev.name, ret);
+				pr_err("%s: registration failed: %d\n",
+				       dev->pdev.name, ret);
 			else
-				pr_info("%s.%d: registration failed: %d\n", dev->pdev.name, dev->pdev.id,
-					ret);
+				pr_err("%s.%d: registration failed: %d\n",
+				       dev->pdev.name, dev->pdev.id, ret);
 
-			kfree(dev);
-			dev = NULL;
+			goto free_gpio;
 		} else if (index < 0)
 			pr_info("%s: registered\n", dev->pdev.name);
 		else
 			pr_info("%s.%d: registered\n", dev->pdev.name, dev->pdev.id);
+
 	} else if (index < 0)
-		pr_warning("%s failed to allocate pdev\n", name);
+		pr_err("%s failed to allocate pdev\n", name);
 	else
-		pr_warning("%s.%d failed to allocate pdev\n", name, index);
+		pr_err("%s.%d failed to allocate pdev\n", name, index);
+
+	goto done;
+free_gpio:
+	sunxi_pio_release_array(dev->pio);
+	kfree(dev->pio);
+free_dev:
+	kfree(dev);
+done:
+	return;
 }
 
 /*
