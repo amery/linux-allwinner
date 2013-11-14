@@ -24,9 +24,13 @@
 
 #include <linux/ioport.h>
 
+#include <mach/irqs.h>
+
+#include <plat/system.h>
 #include <plat/script.h>
 
 #define SUNXI_DEVICE_NAME_LEN	32
+#define RES(d, i, s)	(d)->resource[i] = (struct resource) s
 
 struct sunxi_device {
 	char name[SUNXI_DEVICE_NAME_LEN];
@@ -77,7 +81,45 @@ static struct sunxi_device *generic_new(const struct sunxi_section *sp,
 	return dev;
 }
 
+/* sunxi-uart */
+#define UART_BASE       (0x01C28000)
+#define UART_BASE_OS    (0x400)
+#define UARTx_BASE(x)   (UART_BASE + (x) * UART_BASE_OS)
+
+static int uart_irqs[] = {
+	SW_INT_IRQNO_UART0,
+	SW_INT_IRQNO_UART1,
+	SW_INT_IRQNO_UART2,
+	SW_INT_IRQNO_UART3,
+	SW_INT_IRQNO_UART4,
+	SW_INT_IRQNO_UART5,
+	SW_INT_IRQNO_UART6,
+	SW_INT_IRQNO_UART7,
+};
+
+static struct sunxi_device *uart_new(const struct sunxi_section *sp,
+				     const char *feature, int id)
+{
+	int max = sunxi_is_sun5i() ? 4 : 8;
+	struct sunxi_device *dev = NULL;
+
+	if (id >= 0 && id < max)
+		dev = sunxi_device_alloc(2, "sunxi-%s", feature);
+
+	if (dev) {
+		dev->pdev.id = id;
+		dev->config = sp;
+		RES(dev, 0, DEFINE_RES_MEM(UARTx_BASE(id), UART_BASE_OS));
+		RES(dev, 1, DEFINE_RES_IRQ(uart_irqs[id]));
+		dev->pdev.num_resources = dev->num_res;
+		dev->pdev.resource = dev->resource;
+	}
+
+	return dev;
+}
+
 static struct pdev_constructor constructors[] = {
+	{ .name = "uart", .f = uart_new, },
 	{ .f = generic_new, }, /* fallback */
 };
 
