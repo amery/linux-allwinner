@@ -59,3 +59,41 @@ int sunxi_pio_request(const char *name, unsigned bank, unsigned num,
 	return ret;
 }
 EXPORT_SYMBOL_GPL(sunxi_pio_request);
+
+int sunxi_pio_release(u32 pin)
+{
+	int ret = 0;
+	unsigned bank = pin >> 5;
+	unsigned num = pin & 0x1f;
+
+	if (!pio_is_valid(bank, num)) {
+		pr_err("release: invalid PIO (%u,%u)\n", bank, num);
+		ret = -EINVAL;
+	} else if (requested[bank] & BIT(num)) {
+		pr_debug("release: P%c%u\n", 'A'+bank, num);
+		requested[bank] &= ~BIT(num);
+	} else {
+		pr_warn("release: P%c%u\n wasn't requested.", 'A'+bank, num);
+		ret = 1;
+	}
+	return ret;
+}
+EXPORT_SYMBOL_GPL(sunxi_pio_release);
+
+int sunxi_pio_release_array(u32 *pin)
+{
+	int ret;
+	if (pin) {
+		for (ret = 0; *pin != -1; pin++) {
+			if (*pin > 0) {
+				int r = sunxi_pio_release(*pin);
+				if (r < 0 ||
+				    (ret == 0 && r > 0))
+					ret = r;
+			}
+		}
+	} else
+		ret = 1;
+	return ret;
+}
+EXPORT_SYMBOL_GPL(sunxi_pio_release_array);

@@ -127,4 +127,7 @@ static inline void sunxi_pio_set_val(struct sunxi_pio_reg *reg,
 int sunxi_pio_request(const char *name, unsigned bank, unsigned num,
 		      int mux, int pull, int drv, int val);
 
+int sunxi_pio_release(u32 pin);
+int sunxi_pio_release_array(u32 *pin);
+
 #endif
