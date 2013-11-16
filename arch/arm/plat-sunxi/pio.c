@@ -19,8 +19,13 @@
 #include <plat/platform.h>
 #include <plat/pio.h>
 
-static u32 requested[9]; /* bitmask */
+#if defined(CONFIG_AW_AXP) || defined(CONFIG_AW_AXP_MODULE)
+#include "../../drivers/power/axp_power/axp-gpio.h"
+#define pio_is_axp(bank, num) ((bank) == 0xffff && (num) < 32)
+static u32 power;
+#endif
 
+static u32 requested[9]; /* bitmask */
 #define pio_is_valid(bank, num)	((bank) < ARRAY_SIZE(requested) && (num) < 32)
 
 int sunxi_pio_request(const char *name, unsigned bank, unsigned num,
@@ -51,6 +56,34 @@ int sunxi_pio_request(const char *name, unsigned bank, unsigned num,
 			if (val >= 0)
 				sunxi_pio_set_val(reg, bank, num, val);
 		}
+#if defined(CONFIG_AW_AXP) || defined(CONFIG_AW_AXP_MODULE)
+	} else if (pio_is_axp(bank, num)) {
+		if (power & BIT(num)) {
+			pr_err("%s: power%u already requested.\n", name, num);
+			ret = -EBUSY;
+		} else {
+			pr_debug("%s: power%u<%d><-><-><%d> requested.\n",
+				 name, num, mux, val);
+
+			power |= BIT(num); /* flag as requested */
+
+			if (mux >= 0) {
+				ret = axp_gpio_set_io(num, mux);
+				if (ret < 0)
+					goto axp_ret_set;
+			}
+
+			if (val >= 0) {
+				ret = axp_gpio_set_value(num, val);
+				if (ret < 0)
+					goto axp_ret_set;
+			}
+
+			ret = (bank << 5) | num;
+axp_ret_set:
+			;
+		}
+#endif
 	} else {
 		pr_err("%s: invalid PIO (%u,%u)\n", name, bank, num);
 		ret = -EINVAL;
@@ -66,6 +99,17 @@ int sunxi_pio_release(u32 pin)
 	unsigned bank = pin >> 5;
 	unsigned num = pin & 0x1f;
 
+#if defined(CONFIG_AW_AXP) || defined(CONFIG_AW_AXP_MODULE)
+	if (pio_is_axp(bank, num)) {
+		if (power & BIT(num)) {
+			pr_debug("release: power%u\n", num);
+			power &= ~BIT(num);
+		} else {
+			pr_warn("release: power%u\n wasn't requested.", num);
+			ret = 1;
+		}
+	} else
+#endif
 	if (!pio_is_valid(bank, num)) {
 		pr_err("release: invalid PIO (%u,%u)\n", bank, num);
 		ret = -EINVAL;
@@ -96,4 +140,5 @@ int sunxi_pio_release_array(u32 *pin)
 		ret = 1;
 	return ret;
 }
+
 EXPORT_SYMBOL_GPL(sunxi_pio_release_array);
