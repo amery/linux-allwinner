@@ -48,6 +48,18 @@ static inline unsigned sunxi_pio_get_mux(struct sunxi_pio_reg *reg,
 	return (pio->mux[index] >> offset) & 0x7;
 }
 
+static inline void sunxi_pio_set_mux(struct sunxi_pio_reg *reg,
+				     unsigned bank, unsigned num,
+				     unsigned mux)
+{
+	struct sunxi_pio_bank *pio = &reg->bank[bank];
+	unsigned index = num >> 3;
+	unsigned offset = (num & 0x7) << 2;
+	u32 val = pio->mux[index] & ~(0x7 << offset);
+
+	pio->mux[index] = val | ((mux & 0x7) << offset);
+}
+
 static inline unsigned sunxi_pio_get_drv(struct sunxi_pio_reg *reg,
 					 unsigned bank, unsigned num)
 {
@@ -56,6 +68,18 @@ static inline unsigned sunxi_pio_get_drv(struct sunxi_pio_reg *reg,
 	unsigned offset = (num & 0xf) << 1;
 
 	return (pio->drv[index] >> offset) & 0x3;
+}
+
+static inline void sunxi_pio_set_drv(struct sunxi_pio_reg *reg,
+				     unsigned bank, unsigned num,
+				     unsigned drv)
+{
+	struct sunxi_pio_bank *pio = &reg->bank[bank];
+	unsigned index = num >> 4;
+	unsigned offset = (num & 0xf) << 1;
+	u32 val = pio->drv[index] & ~(0x3 << offset);
+
+	pio->drv[index] = val | ((drv & 0x3) << offset);
 }
 
 static inline unsigned sunxi_pio_get_pull(struct sunxi_pio_reg *reg,
@@ -68,11 +92,33 @@ static inline unsigned sunxi_pio_get_pull(struct sunxi_pio_reg *reg,
 	return (pio->pull[index] >> offset) & 0x3;
 }
 
+static inline void sunxi_pio_set_pull(struct sunxi_pio_reg *reg,
+				      unsigned bank, unsigned num,
+				      unsigned pull)
+{
+	struct sunxi_pio_bank *pio = &reg->bank[bank];
+	unsigned index = num >> 4;
+	unsigned offset = (num & 0xf) << 1;
+	u32 val = pio->pull[index] & ~(0x3 << offset);
+
+	pio->pull[index] = val | ((pull & 0x3) << offset);
+}
+
 static inline unsigned sunxi_pio_get_val(struct sunxi_pio_reg *reg,
 					 unsigned bank, unsigned num)
 {
 	struct sunxi_pio_bank *pio = &reg->bank[bank];
 	return (pio->dat >> num) & 0x01;
+}
+
+static inline void sunxi_pio_set_val(struct sunxi_pio_reg *reg,
+				     unsigned bank, unsigned num,
+				     unsigned v)
+{
+	struct sunxi_pio_bank *pio = &reg->bank[bank];
+	u32 val = pio->dat & ~(0x01 << num);
+
+	pio->dat = val | ((v & 0x01) << num);
 }
 
 #endif
