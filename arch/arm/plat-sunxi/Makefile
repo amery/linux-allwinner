@@ -1,6 +1,6 @@
 obj-y += sys_config.o
 obj-y += core.o soc-detect.o
-obj-y += script.o
+obj-y += script.o pio.o
 obj-y += clocksrc.o
 obj-y += devices.o
 

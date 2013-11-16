@@ -121,4 +121,10 @@ static inline void sunxi_pio_set_val(struct sunxi_pio_reg *reg,
 	pio->dat = val | ((v & 0x01) << num);
 }
 
+/*
+ * request/release
+ */
+int sunxi_pio_request(const char *name, unsigned bank, unsigned num,
+		      int mux, int pull, int drv, int val);
+
 #endif
