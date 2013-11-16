@@ -1,29 +1,24 @@
 /*
- * Copyright (C) 2012, Alejandro Mery <amery@geeks.cl>
+ * Copyright 2012-2013 Alejandro Mery
+ *
+ * Alejandro Mery <amery@geeks.cl>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of
  * the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
  */
 
 #define pr_fmt(fmt)	"sunxi: script: " fmt
 
+#include <linux/errno.h>
 #include <linux/export.h>
 #include <linux/kernel.h>
+#include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/types.h>
 
+#include <plat/pio.h>
 #include <plat/script.h>
 
 const struct sunxi_script *sunxi_script_base = NULL;
@@ -55,3 +50,38 @@ const struct sunxi_property *sunxi_find_property_fmt(
 	return prop;
 }
 EXPORT_SYMBOL_GPL(sunxi_find_property_fmt);
+
+ssize_t sunxi_request_section_gpio(u32 **out,
+				   const struct sunxi_section *sp)
+{
+	const struct sunxi_property *pp;
+	unsigned count = 0, i;
+
+	sunxi_for_each_property(sp, pp, i) {
+		if (SUNXI_PROP_TYPE_GPIO == sunxi_property_type(pp))
+			count++;
+	}
+
+	if (count > 0) {
+		u32 *p = kzalloc((count + 1)*sizeof(u32), GFP_KERNEL);
+		*out = p;
+
+		if (!p)
+			return -ENOMEM;
+
+		sunxi_for_each_property(sp, pp, i) {
+			s32 pio = sunxi_property_request_gpio(pp);
+			if (pio >= 0)
+				*p++ = pio;
+			else if (pio < -1)
+				*p++ = 0;
+			else
+				;
+		}
+		*p = -1;
+	} else
+		*out = NULL;
+
+	return count;
+}
+EXPORT_SYMBOL_GPL(sunxi_request_section_gpio);

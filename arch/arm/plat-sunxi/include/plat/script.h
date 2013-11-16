@@ -1,23 +1,17 @@
 /*
- * Copyright (C) 2012, Alejandro Mery <amery@geeks.cl>
+ * Copyright 2012-2013 Alejandro Mery
+ *
+ * Alejandro Mery <amery@geeks.cl>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of
  * the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
- * MA 02111-1307 USA
  */
 #ifndef _SUNXI_PLAT_SCRIPT_H
 #define _SUNXI_PLAT_SCRIPT_H
+
+#include <plat/pio.h>
 
 #define SYS_CONFIG_MEMBASE	(PLAT_PHYS_OFFSET + SZ_32M + SZ_16M)
 #define SYS_CONFIG_MEMSIZE	(SZ_64K)
@@ -221,7 +215,7 @@ static inline int sunxi_property_read_string(const struct sunxi_property *prop,
 /**
  * sunxi_script_property_read_gpio() - read value of gpio property
  */
-static inline int sunxi_property_read_gpio(struct sunxi_property *prop,
+static inline int sunxi_property_read_gpio(const struct sunxi_property *prop,
 					struct sunxi_property_gpio_value **val)
 {
 	if (sunxi_property_type(prop) == SUNXI_PROP_TYPE_GPIO) {
@@ -231,4 +225,19 @@ static inline int sunxi_property_read_gpio(struct sunxi_property *prop,
 	}
 	return 0;
 }
+
+static inline s32 sunxi_property_request_gpio(const struct sunxi_property *prop)
+{
+	struct sunxi_property_gpio_value *gpio;
+	if (sunxi_property_read_gpio(prop, &gpio)) {
+		return sunxi_pio_request(prop->name, gpio->port-1, gpio->port_num,
+					 gpio->mul_sel, gpio->pull, gpio->drv_level,
+					 gpio->data);
+	}
+	return -1;
+}
+
+ssize_t sunxi_request_section_gpio(u32 **out,
+				   const struct sunxi_section *sp);
+
 #endif
