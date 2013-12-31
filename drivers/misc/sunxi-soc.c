@@ -29,11 +29,10 @@
 #define SC_CHIP_ID		(SC_CHIP_ID_MASK<<SC_CHIP_ID_OFF)
 
 static void __iomem *sramc_base, *sc_base;
+static u32 chip_id;
 
 void sunxi_setup_soc_detect(void)
 {
-	u32 chip_id;
-
 	if (!sramc_base) {
 		sramc_base = ioremap(SRAMC_IO_BASE, SZ_4K);
 		if (!sramc_base) {
@@ -43,58 +42,60 @@ void sunxi_setup_soc_detect(void)
 		sc_base = (void*)((char*)sramc_base + 0x24);
 	}
 
-	chip_id = sunxi_chip_id();
-	if (chip_id != SUNXI_UNKNOWN_MACH)
+	chip_id = sunxi_sc_chip_id();
+	if (chip_id != SUNXI_UNKNOWN_MACH) {
 		pr_info("Allwinner AW%u/%s detected\n", chip_id,
 			sunxi_chip_id_name());
+	}
 }
 EXPORT_SYMBOL(sunxi_setup_soc_detect);
 
 u32 sunxi_sc_chip_id(void)
 {
-	u32 chip_id, reg_val;
+	u32 ret = SUNXI_UNKNOWN_MACH;
+	u32 val, reg_val;
 
 	if (unlikely(!sc_base))
-		return SUNXI_UNKNOWN_MACH;
+		goto done;
 
 	/* enable chip_id reading */
 	reg_val = readl(sc_base);
 	writel(reg_val | SC_CHIP_ID_EN, sc_base);
 
 	reg_val = readl(sc_base);
-	chip_id = ((reg_val&SC_CHIP_ID)>>SC_CHIP_ID_OFF) & SC_CHIP_ID_MASK;
+	val = ((reg_val&SC_CHIP_ID)>>SC_CHIP_ID_OFF) & SC_CHIP_ID_MASK;
 
-	switch (chip_id) {
+	switch (val) {
 	case 0x1623:
-		return SUNXI_MACH_SUN4I;
+		ret = SUNXI_MACH_SUN4I;
+		break;
 	case 0x1625:
-		return SUNXI_MACH_SUN5I;
+		ret = SUNXI_MACH_SUN5I;
+		break;
 	case 0x1633:
-		return SUNXI_MACH_SUN6I;
+		ret = SUNXI_MACH_SUN6I;
+		break;
 	case 0x1651:
-		return SUNXI_MACH_SUN7I;
+		ret = SUNXI_MACH_SUN7I;
+		break;
 	default:
 		pr_err("SC: failed to identify chip-id 0x%04x (*%p == 0x%08x)\n",
-		       chip_id, sc_base, reg_val);
-		return SUNXI_UNKNOWN_MACH;
+		       val, sc_base, reg_val);
 	}
+done:
+	return ret;
 }
 EXPORT_SYMBOL(sunxi_sc_chip_id);
 
 u32 sunxi_chip_id(void)
 {
-	static u32 chip_id;
-
-	if (unlikely(chip_id == 0))
-		chip_id = sunxi_sc_chip_id();
-
 	return chip_id;
 }
 EXPORT_SYMBOL(sunxi_chip_id);
 
 const char *sunxi_chip_id_name(void)
 {
-	switch (sunxi_chip_id()) {
+	switch (chip_id) {
 	case SUNXI_MACH_SUN4I:
 		return "sun4i";
 	case SUNXI_MACH_SUN5I:
