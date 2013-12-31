@@ -58,8 +58,16 @@ void sunxi_setup_soc_detect(void)
 {
 	chip_id = sunxi_sc_chip_id();
 	if (chip_id != SUNXI_UNKNOWN_MACH) {
-		pr_info("Allwinner AW%u/%s detected\n", chip_id,
-			sunxi_chip_id_name());
+		char rev_name[] = " rev A";
+		int rev = sunxi_chip_rev();
+		if (!rev)
+			rev_name[0] = '\0';
+		else
+			rev_name[5] += SUNXI_REV_A - 1;
+
+		pr_info("Allwinner %s%s (AW%u/%s) detected\n",
+			sunxi_chip_name(), rev_name,
+			chip_id, sunxi_chip_id_name());
 	}
 }
 EXPORT_SYMBOL(sunxi_setup_soc_detect);
@@ -204,3 +212,22 @@ const char *sunxi_chip_id_name(void)
 	}
 }
 EXPORT_SYMBOL(sunxi_chip_id_name);
+
+const char *sunxi_chip_name(void)
+{
+	if (sunxi_is_a10())
+		return "A10";
+	else if (sunxi_is_a13())
+		return "A13";
+	else if (sunxi_is_a12())
+		return "A12";
+	else if (sunxi_is_a10s())
+		return "A10s";
+	else if (sunxi_is_a31())
+		return "A31";
+	else if (sunxi_is_a20())
+		return "A20";
+	else
+		return "Unknown";
+}
+EXPORT_SYMBOL(sunxi_chip_name);

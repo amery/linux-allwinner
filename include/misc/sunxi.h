@@ -112,6 +112,7 @@ enum sunxi_chip_ver sunxi_chip_ver(void) __pure;
 void sunxi_setup_soc_detect(void);
 
 const char *sunxi_chip_id_name(void) __pure;
+const char *sunxi_chip_name(void) __pure;
 
 #endif /* CONFIG_ARCH_SUNXI */
 #endif /* !_SUNXI_H_ */
