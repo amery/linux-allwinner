@@ -93,10 +93,21 @@ u32 sunxi_sc_chip_id(void) __pure;
 u32 sunxi_chip_id(void) __pure;
 enum sunxi_chip_ver sunxi_chip_ver(void) __pure;
 
+#define _sunxi_is(M)		((sunxi_chip_ver()&M) == M)
+
 #define sunxi_is_sun4i()	(sunxi_chip_id() == SUNXI_MACH_SUN4I)
 #define sunxi_is_sun5i()	(sunxi_chip_id() == SUNXI_MACH_SUN5I)
 #define sunxi_is_sun6i()	(sunxi_chip_id() == SUNXI_MACH_SUN6I)
 #define sunxi_is_sun7i()	(sunxi_chip_id() == SUNXI_MACH_SUN7I)
+
+#define sunxi_is_a10()		_sunxi_is(SUNXI_SOC_A10)
+#define sunxi_is_a13()		_sunxi_is(SUNXI_SOC_A13)
+#define sunxi_is_a12()		_sunxi_is(SUNXI_SOC_A12)
+#define sunxi_is_a10s()		_sunxi_is(SUNXI_SOC_A10S)
+#define sunxi_is_a31()		_sunxi_is(SUNXI_SOC_A31)
+#define sunxi_is_a20()		_sunxi_is(SUNXI_SOC_A20)
+
+#define sunxi_chip_rev()	(sunxi_chip_ver() & 0xf)
 
 void sunxi_setup_soc_detect(void);
 
