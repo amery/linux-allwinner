@@ -1,3 +1,14 @@
+/*
+ * SoC detect code for Allwinner chips
+ *
+ * Copyright (C) 2013 Alejandro Mery
+ *
+ * Alejandro Mery
+ *
+ * This file is licensed under the terms of the GNU General Public
+ * License version 2.  This program is licensed "as is" without any
+ * warranty of any kind, whether express or implied.
+ */
 #define pr_fmt(fmt) "sunxi: " fmt
 
 #include <linux/kernel.h>
@@ -16,19 +27,32 @@
 #define SC_CHIP_ID_OFF		16
 #define SC_CHIP_ID		(SC_CHIP_ID_MASK<<SC_CHIP_ID_OFF)
 
-u32 sunxi_sc_chip_id(void)
-{
-	static void __iomem *sramc_base, *sc_base;
-	u32 chip_id, reg_val;
+static void __iomem *sramc_base, *sc_base;
 
-	if (unlikely(!sc_base)) {
+void sunxi_setup_soc_detect(void)
+{
+	u32 chip_id = 0;
+
+	if (!sramc_base) {
 		sramc_base = ioremap(SRAMC_IO_BASE, SZ_4K);
 		if (!sramc_base) {
 			pr_err("Failed to iomap the SRAMC register\n");
-			return 0;
+			return;
 		}
 		sc_base = (void*)((char*)sramc_base + 0x24);
 	}
+
+	chip_id = sunxi_chip_id();
+	pr_info("Allwinner AW%x detected\n", chip_id);
+}
+EXPORT_SYMBOL(sunxi_setup_soc_detect);
+
+u32 sunxi_sc_chip_id(void)
+{
+	u32 chip_id, reg_val;
+
+	if (unlikely(!sc_base))
+		return 0;
 
 	/* enable chip_id reading */
 	reg_val = readl(sc_base);
