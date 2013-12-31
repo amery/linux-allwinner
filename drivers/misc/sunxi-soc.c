@@ -9,6 +9,7 @@
  * License version 2.  This program is licensed "as is" without any
  * warranty of any kind, whether express or implied.
  */
+
 #define pr_fmt(fmt) "sunxi: " fmt
 
 #include <linux/kernel.h>
@@ -31,7 +32,7 @@ static void __iomem *sramc_base, *sc_base;
 
 void sunxi_setup_soc_detect(void)
 {
-	u32 chip_id = 0;
+	u32 chip_id;
 
 	if (!sramc_base) {
 		sramc_base = ioremap(SRAMC_IO_BASE, SZ_4K);
@@ -43,7 +44,9 @@ void sunxi_setup_soc_detect(void)
 	}
 
 	chip_id = sunxi_chip_id();
-	pr_info("Allwinner AW%x detected\n", chip_id);
+	if (chip_id != SUNXI_UNKNOWN_MACH)
+		pr_info("Allwinner AW%u/%s detected\n", chip_id,
+			sunxi_chip_id_name());
 }
 EXPORT_SYMBOL(sunxi_setup_soc_detect);
 
@@ -52,7 +55,7 @@ u32 sunxi_sc_chip_id(void)
 	u32 chip_id, reg_val;
 
 	if (unlikely(!sc_base))
-		return 0;
+		return SUNXI_UNKNOWN_MACH;
 
 	/* enable chip_id reading */
 	reg_val = readl(sc_base);
@@ -61,7 +64,20 @@ u32 sunxi_sc_chip_id(void)
 	reg_val = readl(sc_base);
 	chip_id = ((reg_val&SC_CHIP_ID)>>SC_CHIP_ID_OFF) & SC_CHIP_ID_MASK;
 
-	return chip_id;
+	switch (chip_id) {
+	case 0x1623:
+		return SUNXI_MACH_SUN4I;
+	case 0x1625:
+		return SUNXI_MACH_SUN5I;
+	case 0x1633:
+		return SUNXI_MACH_SUN6I;
+	case 0x1651:
+		return SUNXI_MACH_SUN7I;
+	default:
+		pr_err("SC: failed to identify chip-id 0x%04x (*%p == 0x%08x)\n",
+		       chip_id, sc_base, reg_val);
+		return SUNXI_UNKNOWN_MACH;
+	}
 }
 EXPORT_SYMBOL(sunxi_sc_chip_id);
 
@@ -75,3 +91,20 @@ u32 sunxi_chip_id(void)
 	return chip_id;
 }
 EXPORT_SYMBOL(sunxi_chip_id);
+
+const char *sunxi_chip_id_name(void)
+{
+	switch (sunxi_chip_id()) {
+	case SUNXI_MACH_SUN4I:
+		return "sun4i";
+	case SUNXI_MACH_SUN5I:
+		return "sun5i";
+	case SUNXI_MACH_SUN6I:
+		return "sun6i";
+	case SUNXI_MACH_SUN7I:
+		return "sun7i";
+	default:
+		return "sunNi";
+	}
+}
+EXPORT_SYMBOL(sunxi_chip_id_name);
