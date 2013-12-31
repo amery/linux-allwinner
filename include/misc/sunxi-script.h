@@ -61,8 +61,6 @@ enum sunxi_property_type {
 /* local helpers, will undef */
 #define PTR(B, OFF)	(void*)((char*)(B)+((OFF)<<2))
 
-void sunxi_script_init(const struct sunxi_script *);
-
 /* counts */
 static inline int sunxi_get_section_count(void)
 {
