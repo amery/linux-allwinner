@@ -18,6 +18,9 @@
 
 #define SUNXI_SRAMC_IO_BASE	(SUNXI_IO_BASE + 0x00000)
 #define SUNXI_SC_IO_BASE	(SUNXI_IO_BASE + 0x00024)
+#define SUNXI_SSE_IO_BASE	(SUNXI_IO_BASE + 0x15000)
+#define SUNXI_TIMERC_IO_BASE	(SUNXI_IO_BASE + 0x20c00)
+#define SUNXI_SID_IO_BASE	(SUNXI_IO_BASE + 0x23800)
 
 void __iomem *sunxi_phy_to_virt(u32 phy_base, u32 offset) __pure;
 
@@ -31,8 +34,64 @@ enum sunxi_chip_id {
 	SUNXI_MACH_SUN7I = 1651,
 };
 
+enum {
+	SUNXI_BIT_SUN4I = BIT(30),
+	SUNXI_BIT_SUN5I = BIT(29),
+	SUNXI_BIT_SUN6I = BIT(28),
+	SUNXI_BIT_SUN7I = BIT(27),
+
+	/* SUNXI_BIT_UNKNOWN can't OR anything known */
+	SUNXI_BIT_UNKNOWN = BIT(20),
+
+	/* sun4i */
+	SUNXI_SOC_A10  = SUNXI_BIT_SUN4I | BIT(4),
+
+	/* sun5i */
+	SUNXI_SOC_A13  = SUNXI_BIT_SUN5I | BIT(4),
+	SUNXI_SOC_A12  = SUNXI_BIT_SUN5I | BIT(5),
+	SUNXI_SOC_A10S = SUNXI_BIT_SUN5I | BIT(6),
+
+	/* sun6i */
+	SUNXI_SOC_A31 = SUNXI_BIT_SUN6I | BIT(4),
+
+	/* sun7i */
+	SUNXI_SOC_A20 = SUNXI_BIT_SUN7I | BIT(4),
+
+	SUNXI_REV_UNKNOWN = 0,
+	SUNXI_REV_A,
+	SUNXI_REV_B,
+	SUNXI_REV_C,
+};
+
+enum sunxi_chip_ver {
+	SUNXI_VER_UNKNOWN = SUNXI_BIT_UNKNOWN,
+
+	/* sun4i */
+	SUNXI_VER_A10A = SUNXI_SOC_A10 + SUNXI_REV_A,
+	SUNXI_VER_A10B,
+	SUNXI_VER_A10C,
+
+	/* sun5i */
+	SUNXI_VER_A13 = SUNXI_SOC_A13,
+	SUNXI_VER_A13A,
+	SUNXI_VER_A13B,
+	SUNXI_VER_A12 = SUNXI_SOC_A12,
+	SUNXI_VER_A12A,
+	SUNXI_VER_A12B,
+	SUNXI_VER_A10S = SUNXI_SOC_A10S,
+	SUNXI_VER_A10SA,
+	SUNXI_VER_A10SB,
+
+	/* sun6i */
+	SUNXI_VER_A31 = SUNXI_SOC_A31,
+
+	/* sun7i */
+	SUNXI_VER_A20 = SUNXI_SOC_A20,
+};
+
 u32 sunxi_sc_chip_id(void) __pure;
 u32 sunxi_chip_id(void) __pure;
+enum sunxi_chip_ver sunxi_chip_ver(void) __pure;
 
 #define sunxi_is_sun4i()	(sunxi_chip_id() == SUNXI_MACH_SUN4I)
 #define sunxi_is_sun5i()	(sunxi_chip_id() == SUNXI_MACH_SUN5I)
