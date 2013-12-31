@@ -18,7 +18,33 @@
 
 #include <misc/sunxi.h>
 
-#define SRAMC_IO_BASE		0x01c00000
+/*
+ * IO Addresses
+ */
+
+void __iomem *sunxi_phy_to_virt(u32 phy_base)
+{
+	static void __iomem *virt_base;
+
+	if (unlikely(!virt_base)) {
+		virt_base = ioremap(SUNXI_IO_BASE, SUNXI_IO_SIZE);
+		BUG_ON(!virt_base);
+
+		pr_info("iomap: 0x%08x - 0x%08x @ 0x%p\n",
+			SUNXI_IO_BASE,
+			SUNXI_IO_BASE + SUNXI_IO_SIZE - 1,
+			virt_base);
+	}
+
+	BUG_ON(phy_base < SUNXI_IO_BASE || phy_base >= SUNXI_IO_BASE + SUNXI_IO_SIZE);
+	return ((char*)virt_base) + (phy_base - SUNXI_IO_BASE);
+}
+EXPORT_SYMBOL(sunxi_phy_to_virt);
+
+/*
+ * soc-detect
+ */
+static u32 chip_id;
 
 #define SC_CHIP_ID_EN_MASK	0x1
 #define SC_CHIP_ID_EN_OFF	15
@@ -28,20 +54,8 @@
 #define SC_CHIP_ID_OFF		16
 #define SC_CHIP_ID		(SC_CHIP_ID_MASK<<SC_CHIP_ID_OFF)
 
-static void __iomem *sramc_base, *sc_base;
-static u32 chip_id;
-
 void sunxi_setup_soc_detect(void)
 {
-	if (!sramc_base) {
-		sramc_base = ioremap(SRAMC_IO_BASE, SZ_4K);
-		if (!sramc_base) {
-			pr_err("Failed to iomap the SRAMC register\n");
-			return;
-		}
-		sc_base = (void*)((char*)sramc_base + 0x24);
-	}
-
 	chip_id = sunxi_sc_chip_id();
 	if (chip_id != SUNXI_UNKNOWN_MACH) {
 		pr_info("Allwinner AW%u/%s detected\n", chip_id,
@@ -52,11 +66,9 @@ EXPORT_SYMBOL(sunxi_setup_soc_detect);
 
 u32 sunxi_sc_chip_id(void)
 {
+	void __iomem *sc_base = sunxi_phy_to_virt(SUNXI_SC_IO_BASE);
 	u32 ret = SUNXI_UNKNOWN_MACH;
 	u32 val, reg_val;
-
-	if (unlikely(!sc_base))
-		goto done;
 
 	/* enable chip_id reading */
 	reg_val = readl(sc_base);
@@ -82,7 +94,7 @@ u32 sunxi_sc_chip_id(void)
 		pr_err("SC: failed to identify chip-id 0x%04x (*%p == 0x%08x)\n",
 		       val, sc_base, reg_val);
 	}
-done:
+
 	return ret;
 }
 EXPORT_SYMBOL(sunxi_sc_chip_id);

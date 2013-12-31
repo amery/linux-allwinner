@@ -12,6 +12,16 @@
 #define _SUNXI_H_
 #ifdef CONFIG_ARCH_SUNXI
 
+/* I/O Addresses */
+#define SUNXI_IO_BASE	0x01c00000
+#define SUNXI_IO_SIZE	(0x02000000-SUNXI_IO_BASE)
+
+#define SUNXI_SRAMC_IO_BASE	(SUNXI_IO_BASE + 0x00000)
+#define SUNXI_SC_IO_BASE	(SUNXI_IO_BASE + 0x00024)
+
+void __iomem *sunxi_phy_to_virt(u32 phy_base) __pure;
+
+/* soc-detect */
 enum sunxi_chip_id {
 	SUNXI_UNKNOWN_MACH = 0xffffffff,
 
