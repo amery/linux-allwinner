@@ -24,6 +24,11 @@ enum sunxi_chip_id {
 u32 sunxi_sc_chip_id(void) __pure;
 u32 sunxi_chip_id(void) __pure;
 
+#define sunxi_is_sun4i()	(sunxi_chip_id() == SUNXI_MACH_SUN4I)
+#define sunxi_is_sun5i()	(sunxi_chip_id() == SUNXI_MACH_SUN5I)
+#define sunxi_is_sun6i()	(sunxi_chip_id() == SUNXI_MACH_SUN6I)
+#define sunxi_is_sun7i()	(sunxi_chip_id() == SUNXI_MACH_SUN7I)
+
 void sunxi_setup_soc_detect(void);
 
 const char *sunxi_chip_id_name(void) __pure;
