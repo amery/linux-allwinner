@@ -22,7 +22,7 @@
  * IO Addresses
  */
 
-void __iomem *sunxi_phy_to_virt(u32 phy_base)
+void __iomem *sunxi_phy_to_virt(u32 phy_base, u32 offset)
 {
 	static void __iomem *virt_base;
 
@@ -37,7 +37,7 @@ void __iomem *sunxi_phy_to_virt(u32 phy_base)
 	}
 
 	BUG_ON(phy_base < SUNXI_IO_BASE || phy_base >= SUNXI_IO_BASE + SUNXI_IO_SIZE);
-	return ((char*)virt_base) + (phy_base - SUNXI_IO_BASE);
+	return ((char*)virt_base) + (phy_base - SUNXI_IO_BASE + offset);
 }
 EXPORT_SYMBOL(sunxi_phy_to_virt);
 
@@ -66,7 +66,7 @@ EXPORT_SYMBOL(sunxi_setup_soc_detect);
 
 u32 sunxi_sc_chip_id(void)
 {
-	void __iomem *sc_base = sunxi_phy_to_virt(SUNXI_SC_IO_BASE);
+	void __iomem *sc_base = sunxi_phy_to_virt(SUNXI_SC_IO_BASE, 0x0);
 	u32 ret = SUNXI_UNKNOWN_MACH;
 	u32 val, reg_val;
 

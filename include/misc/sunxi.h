@@ -19,7 +19,7 @@
 #define SUNXI_SRAMC_IO_BASE	(SUNXI_IO_BASE + 0x00000)
 #define SUNXI_SC_IO_BASE	(SUNXI_IO_BASE + 0x00024)
 
-void __iomem *sunxi_phy_to_virt(u32 phy_base) __pure;
+void __iomem *sunxi_phy_to_virt(u32 phy_base, u32 offset) __pure;
 
 /* soc-detect */
 enum sunxi_chip_id {
