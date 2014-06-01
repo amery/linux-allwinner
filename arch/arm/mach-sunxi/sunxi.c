@@ -115,6 +115,9 @@ static void __init sunxi_dt_init(void)
 {
 	sunxi_setup_restart();
 
+#ifdef CONFIG_SUNXI_SOC_DETECT
+	sunxi_setup_soc_detect();
+#endif
 	of_platform_populate(NULL, of_default_bus_match_table, NULL, NULL);
 }
 
